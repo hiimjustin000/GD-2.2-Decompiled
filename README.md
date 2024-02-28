@@ -29,6 +29,7 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 - Educating people on how geometry dash is built under the hood. 
 - This repository is <b>not</b> a matching decompilation
 - This code is NOT intended to be compiled. I don't condone pirating the game!! I sure hope you bought it with your own money first!
+- I am not decompiling the entire game, I am hunting for Vulnerabilities. There's really none left Server-side anymore.
 
 Classes that ive pushed but haven't finished will be found in [Issues](https://github.com/Wyliemaster/GD-Decompiled/issues).
 
