@@ -11,6 +11,7 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 
 
 ## My Goals with this fork
+- To Finish what wyliemaster set out to do
 - To have all of `Manager` class components completely decompiled and reverse engineered as they can be the most difficult parts of gd's code to understand. They also make up a large chunk of the game and have numerous functions involved with them and I am also working on providing bindings to geode at the same time as more parts and variable names are being discovered. Understanding these componentes will allow for better mods to be made in the future as well as for understanding how http requests are made (Even though these have been well documentented already thanks to wyliemaster).
 - I am Using Andorid Version 2.205 with ghidra and some help from [geode's bindings](https://github.com/geode-sdk/bindings) to help assist me with reverse engineering GD. I will be altering some of Wylie's original class member names in order to match with geode's class member names to help them mod GD.
 - I will mainly be reverse engineering class objects that are not well understood by the community or haven't been fully reverse engineered yet in order to educate anyone interested...
