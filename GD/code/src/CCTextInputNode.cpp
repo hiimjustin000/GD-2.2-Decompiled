@@ -2,6 +2,8 @@
 #include <cocos2d.h>
 #include <limits.h>
 
+
+/* Loads Up Not Allowed Bad Words */
 cocos2d::CCArray *loadGJBlacklist()
 {
     return cocos2d::CCArray::create(
@@ -253,6 +255,7 @@ cocos2d::CCArray *loadGJBlacklist()
         cocos2d::CCString::create("zabourah"));
 };
 
+/* TODO: Rename to Common Bypass Techniques Or CuricumventionLetters */
 cocos2d::CCArray *load_unknown_list()
 {
     return cocos2d::CCArray::create(
@@ -295,20 +298,33 @@ void CCTextInputNode::addTextArea(TextArea *tArea)
     }
 }
 
-cocos2d::CCRect unknon_function(CCRect &_ccrect, CCTextInputNode *textInputNode, CCPoint &_ccpoint);
+/* creates a ccrect based off ccpoint and textInputNode */
+cocos2d::CCRect create_ccrect(CCTextInputNode *textInputNode, cocos2d::CCPoint &_ccpoint)
+{
+    cocos2d::CCRect rect;
+    rect.origin = textInputNode->getPosition();
+    rect.size = textInputNode->getContentSize();
+    rect.origin.x = rect.origin.x - rect.size.width * _ccpoint.x;
+    rect.origin.y = rect.origin.y - rect.size.height * _ccpoint.y;
+    return rect;
+}
 
 bool CCTextInputNode::ccTouchBegan(cocos2d::CCTouch *touch, cocos2d::CCEvent *event)
 {
-    cocos2d::CCPoint point = convertToNodeSpace(cocos2d::CCDirector::sharedDirector()->convertToGL(touch->getLocationInView()));
-    m_textArea->getAnchorPoint();
-    // cocos2d::CCPoint::operator=((CCPoint *),(CCPoint)in_stack_ffffffa0);
-    // cocos2d::CCNode::convertToNodeSpace((CCNode *)&stack0xffffffcc,in_stack_ffffffa0);
-    // cocos2d::CCPoint::operator=((CCPoint *),(CCPoint)in_stack_ffffffa0);
-    // pCVar3 = (CCPoint *)(*(code *)m_textField->field0_0x0[0x24])();
-    // cocos2d::CCPoint::CCPoint((CCPoint *)(CCNode *)&stack0xffffffcc,pCVar3);
-    // _ccrect.size = in_stack_ffffffa8;
-    // _ccrect.origin = (CCPoint)in_stack_ffffffa0;
+    bool success;
+    cocos2d::CCPoint touchPoint = cocos2d::CCDirector::sharedDirector()->convertToGL(convertToNodeSpace(touch->getLocationInView()));
+    auto anchorpoint = m_textField->getAnchorPoint();
+    cocos2d::CCRect rect = create_ccrect(this, anchorpoint);
+    anchorpoint = anchorpoint + this->getParent()->getPosition();
+    if (rect.containsPoint(touchPoint) && m_delegate->allowTextInput(this)){
+        success = this->onClickTrackNode(true);
+        updateCursorPosition(touchPoint, rect);
+    } else {
+        success = false;
+    }
+    return success;
 }
+
 
 void CCTextInputNode::forceOffset()
 {
