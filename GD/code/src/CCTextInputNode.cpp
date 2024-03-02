@@ -423,6 +423,11 @@ void CCTextInputNode::setString(std::string str)
         m_delegate->textChanged(this);
 }
 
+/* Determines if Keyboard is going to be open or closed and then returns a boolean */
+bool CCTextInputNode::onClickTrackNode(bool isKeyboardOpen){
+    return isKeyboardOpen ? m_textField->attachWithIME() : m_textField->detachWithIME();
+}
+
 bool CCTextInputNode::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *tField)
 {
     if (m_cursor != nullptr)
