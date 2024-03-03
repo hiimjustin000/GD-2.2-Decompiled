@@ -428,6 +428,52 @@ bool CCTextInputNode::onClickTrackNode(bool isKeyboardOpen){
     return isKeyboardOpen ? m_textField->attachWithIME() : m_textField->detachWithIME();
 }
 
+bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
+{
+    const char *cstr;
+    if (m_cursor != nullptr)
+    {
+        m_cursor->setVisible(true);
+    }
+    this->m_selected = true;
+    PlatformToolbox::setKeyboardState(1);
+    
+    if (m_doubleInput) {
+        cstr = m_textField->getString();
+        if (atof(cstr) == 0.0){
+            setString(cstr);
+        }
+    }
+    cstr = m_textField->getString();
+    if (std::string(str) == "") {
+        if (m_placeholderLabel == nullptr) {
+            if (m_textArea != nullptr) {
+                m_textArea->setString(cstr);
+            }
+        }
+        else {
+            m_placeholderLabel->setString(cstr);
+        }
+        updateBlinkLabel();
+    }
+    bool success = false;
+    if (m_delegate != nullptr) {
+        success = m_delegate->textInputOpened(this);
+    }
+
+    if (m_forceOffset) {
+        auto winSize = cocos2d::CCDirector::sharedDirector()->getWinSize();
+        auto rect = create_ccrect(this, this->m_textField->getAnchorPoint());
+        /* It could be this although I'm a little questioned about it... */
+        float minX = rect.getMinX() - 4.0;
+        if (m_delegate != nullptr) {
+            success = m_delegate->textInputShouldOffset(this, minX * 0.5 - rect->getMinY());
+        }
+    } 
+    return success;
+}
+
+
 bool CCTextInputNode::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *tField)
 {
     if (m_cursor != nullptr)
