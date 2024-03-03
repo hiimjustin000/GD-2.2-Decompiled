@@ -367,48 +367,30 @@ bool CCTextInputNodeCallback(CCTextInputNode *textInputNode)
 {
     return textInputNode->keyboardWillShow((CCIMEKeyboardNotificationInfo *)(unaff_r7 << 1));
 }
-// TODO
-// bool CCTextInputNode::keyboardWillShow(CCIMEKeyboardNotificationInfo *keyboard)
-// {
-//   bool bVar1;
-//   CCTextFieldTTF *textField;
-//   CCPoint *other;
-//   CCRect *keyaboardEnd;
-//   float fVar2;
-//   int extraout_r1;
-//   int *callback;
-//   CCPoint CStack_3c;
-//   CCRect CStack_34;
-//   int local_24;
-//   local_24 = *callback;
-//   textField = (CCTextFieldTTF *)this;
-//   if (((m_forceOffset == false) &&
-//       (textField = m_textField, textField != (CCTextFieldTTF *)0x0)) &&
-//      (m_selected != false)) {
-//     keyaboardEnd = &keyboard->end;
-//     other = (CCPoint *)(*(code *)textField->field0_0x0[0x24])();
-//     cocos2d::CCPoint::CCPoint(&CStack_3c,other);
-//     FUN_002f97c4((CCRect *)&CStack_34,(int *)this,&CStack_3c.x);
-//     CStack_34.y = CStack_34.y - 4.0;
-//     bVar1 = cocos2d::CCRect::intersectsRect((CCRect *)&CStack_34,(CCRect *)keyaboardEnd);
-//     textField = (CCTextFieldTTF *)(uint)bVar1;
-//     if (textField != (CCTextFieldTTF *)0x0) {
-//       m_unknown2 = true;
-//       cocos2d::CCRect::getMaxY((CCRect *)keyaboardEnd);
-//       fVar2 = (float)cocos2d::CCRect::getMinY(&CStack_34,extraout_r1);
-//       textField = (CCTextFieldTTF *)m_delegate;
-//       if (textField != (CCTextFieldTTF *)0x0) {
-//         textField = (CCTextFieldTTF *)
-//                     (*(code *)textField->field0_0x0[3])(textField,this,(float)keyaboardEnd - fVar2 );
-//       }
-//     }
-//   }
-//   if (local_24 != *callback) {
-//                     /* WARNING: Subroutine does not return */
-//     __stack_chk_fail();
-//   }
-//   return SUB41(textField,0);
-// }
+
+bool CCTextInputNode::keyboardWillShow(cocos2d::CCIMEKeyboardNotificationInfo *keyboard)
+{
+    if ((this->m_forceOffset == false) && m_textField != nullptr && (this->m_selected != false))
+    {
+        auto rect = create_ccrect(this, keyboardEnd.origin);
+        /* Unknown Part */
+        /* local_30 = local_30 - 4.0; maybe some substraction of keyboardEnd with rect? */
+
+        if (rect->intersectsRect(keyboard->end))
+        {
+            /* I don't understand this part all that well since it's got missing moving parts to it... */
+            m_unknown2 = true;
+            float maxY = keyboard.getMaxY();
+            float minY = keyboard.getMinY();
+            if (m_delegate != nullptr)
+            {
+                return this->isEqual(m_textField);
+            }
+        }
+    }
+    return false;
+}
+
 
 void CCTextInputNode::setLabelNormalColor(cocos2d::_ccColor3B color)
 {
