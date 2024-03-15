@@ -29,7 +29,7 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 - Educating people on how geometry dash is built under the hood. 
 - This repository is <b>not</b> a matching decompilation. Code is code and at the end of the day we don't really know how it was actually written by Robtop.
 - This code is NOT intended to be compiled. I don't condone pirating the game!! I sure hope you bought it with your own money first!
-- I am not decompiling the entire game, I am <b>Primarly hunting for Client-Side Vulnerabilities / Exploits & (CVEs)</b> there's no bounties. There's really no vulnerabilities left Server-side anymore when it comes to this stuff. 
+- I am not decompiling the entire game, I am <b>Primarly hunting for Client-Side Vulnerabilities / Exploits & (CVEs)</b> there's no bounties. There's really no vulnerabilities left Server-side anymore when it comes to this stuff and I've considered documenting stuff such as comment bans, the firewall and other micellaneous stuff that happens on the server's end since I've been programming & interacting with the server for a pretty long time actually.
 - I am mainly decompiling for components outside of the main game's objects unless something catches my eyes. Examples of such objects being reversed Include `ShareCommentLayer` `GameLevelManager`  `CCTextInputNode` or anything of that nature that are having to do with sending/getting comments, anti-hacking, anti-swearing, in-game-anti-cheats, http requests and searching for levels. I sometimes do other objects requested by the community depending on my mood such as the `AchievementManager`.
 
 
