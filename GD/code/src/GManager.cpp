@@ -15,6 +15,8 @@ everything needed to go...
 0x1c0 dataloaded
 0x1c4 firstload
 
+
+Update, those are Vtables
 */
 
 std::string GManager::getcompressedString(){
