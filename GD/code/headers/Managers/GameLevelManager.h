@@ -255,5 +255,7 @@ class GameLevelManager : public cocos2d::CCNode
 
 
 	/* -- could be an inline function... -- */
+	/* I orginally thought this was for eldermods banning users but it turns out they have a 
+ 	secondary application for comment banning that us ordarny people will never see... - Calloc */
 	void banUser(int userID);
 };
