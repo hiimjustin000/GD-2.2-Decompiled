@@ -1,7 +1,7 @@
 #include "../headers/includes.h"
 #include "TextArea.h"
 
-/* NOTE: These functions have all changed since 2.1 and have different functionality... */
+/* NOTE: These functions have all changed since 2.1 */
 
 /* TODO: */
 /* MultilineBitmapFont::createWithFont */
