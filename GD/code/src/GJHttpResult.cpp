@@ -16,6 +16,7 @@ bool GJHttpResult::init(bool success, std::string response, std::string tag, GJH
         this->response = response;
         this->tag = tag;
         this->httptype = httptype;
+        return true;
     }
     return false;
 };
