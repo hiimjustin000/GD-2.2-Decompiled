@@ -3,7 +3,7 @@
 #include <cocos2d.h>
 #include <limits.h>
 
-
+/* If you don't know what IME Means I suggest looking it up, Same can be said about some of these blacklisted swearwords... - Calloc */
 
 /* TODO: I thought about writing robtop a little unique script for loading this balcklist as some words repeat themselves in here and I thought maybe I could be helpful by doing just that. */
 cocos2d::CCArray *LoadGJBlacklist()
@@ -483,9 +483,9 @@ void CCTextInputNode::setAllowedChars(gd::string filter) {
 
 
 /* Determines if Keyboard is going to be open or closed and then returns a boolean */
-bool CCTextInputNode::onClickTrackNode(bool isKeyboardOpen)
+bool CCTextInputNode::onClickTrackNode(bool openIME)
 {
-    return isKeyboardOpen ? m_textField->attachWithIME() : m_textField->detachWithIME();
+    return openIME ? m_textField->attachWithIME() : m_textField->detachWithIME();
 }
 
 bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
