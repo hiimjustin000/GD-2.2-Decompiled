@@ -7,16 +7,15 @@ static GJHttpResult * GJHttpResult::create(bool success, std::string response, s
         return result;
     }
     CC_SAFE_DELETE(result);
-	return nullptr;
+    return nullptr;
 };
 
 bool GJHttpResult::init(bool success, std::string response, std::string tag, GJHttpType httptype){
-    bool created = cocos2d::CCNode::init();
-    if (created){
+    if (cocos2d::CCNode::init()){
         this->success = success;
         this->response = response;
         this->tag = tag;
         this->httptype = httptype;
     }
-    return created;
+    return false;
 };
