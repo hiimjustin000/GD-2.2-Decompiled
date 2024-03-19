@@ -5,7 +5,7 @@
 
 
 /* this is likely for the upcomming verses mode for geometry dash 
- * Some of these oarams are iffy right now so I'm putting an underscore
+ * Some of these params are iffy right now so I'm putting an underscore
  * on the fronts of some of these */
 
 class GJMultiplayerManager: public GManager, public cocos2d::CCNode {
