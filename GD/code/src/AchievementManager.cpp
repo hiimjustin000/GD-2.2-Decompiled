@@ -669,7 +669,7 @@ void AchievementManager::addManualAchievements()
 }
 
 
-bool __thiscall AchievementManager::areAchievementsEarned(AchievementManager *this,CCArray *arr)
+bool AchievementManager::areAchievementsEarned(AchievementManager *this,CCArray *arr)
 {
     bool earned = false;
     unsigned int i = 0;
@@ -682,7 +682,7 @@ bool __thiscall AchievementManager::areAchievementsEarned(AchievementManager *th
             break;
         i++;
     }
-    return bVar1;
+    return earned;
 }
 
 
