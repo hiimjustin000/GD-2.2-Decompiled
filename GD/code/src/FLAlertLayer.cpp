@@ -85,7 +85,7 @@ void FLAlertLayer::incrementForcePrio(){
 }
 
 /* I'll deal with the inits later in the future unless someone wants to go ahead and handle them for me... 
- * I wouldn't say they are being but rather a nightmarish puzzle that I don't want to deal with at the moment */
+ * I wouldn't say they are big, but rather a nightmarish puzzle that I don't want to deal with at the moment */
 
 
 void FLAlertLayer::keyDown(cocos2d::enumKeyCodes keycodes){
