@@ -2,7 +2,7 @@
 
 
 
-void CCSpritePlus::addFollower(CCNode * sprite){
+void CCSpritePlus::addFollower(cocos2d::CCNode * sprite){
     m_hasFollower = true;
     if (m_followers == nullptr) {
         m_followers = cocos2d::CCArray::create();
