@@ -1,22 +1,18 @@
 #include "includes.h"
 
+
 void TextArea::colorAllCharactersTo(cocos2d::ccColor3B color){
-    cocos2d::CCArray* lines = m_label->getChildren();
-    cocos2d::CCArray *chrArray;
-    if (lines != nullptr){
-        for (unsigned int line_idx = 0; line_idx < lines->count(); line_idx++){
-            chrArray = reinterpret_cast<cocos2d::CCLabelBMFont*>(lines->objectAtIndex(line_idx))->getChildren();
-            for (unsigned int chr_idx = 0; chr_idx < chrArray->count(); chr_idx++){
-                reinterpret_cast<cocos2d::CCSprite*>(chrArray->objectAtIndex(chr_idx))->setColor(color);
-            }
-        }
+    cocos2d::CCObject *_line;
+    cocos2d::CCArray* line;
+    
+    CCARRAY_FOREACH(m_label->getChildren(), _line){
+        line = reinterpret_cast<cocos2d::CCArray*>(_line);
+        arrayMakeObjectsPerformSelectorWithObject(line, setColor, color, cocos2d::CCSprite*);
     }
 }
 
 void TextArea::colorAllLabels(cocos2d::ccColor3B color){
-    for (unsigned int i = 0; i < m_label->m_delayedText->count(); i++) {
-        (reinterpret_cast<cocos2d::CCLabelBMFont *>(m_label->m_delayedText->objectAtIndex(i)))->updateDisplayedColor(color);
-    }
+    arrayMakeObjectsPerformSelectorWithObject(m_label->m_delayedText, updateDisplayedColor, color, cocos2d::CCLabelBMFont*);
 }
 
 TextArea* TextArea::create(std::string str, const char *font,float scale,float width, cocos2d::CCPoint anchor, float lineHeight,bool disableColor){
@@ -185,24 +181,23 @@ void TextArea::showAll(){
     Like the Ghidra's decompiler is showing me. 
 
     It was likely an Optimization by Robtop or the Compiler. 
+
+    UPDATE: it's actually a macro...
 */
 
 
 /* shoutouts to acaruso for help with understanding this one... */
 void TextArea::stopAllCharacterActions(){
-    cocos2d::CCArray* lines = m_label->getChildren();
-    cocos2d::CCArray *chrArray;
-    if (lines != nullptr){
-        for (unsigned int line_idx = 0; line_idx < lines->count(); line_idx++){
-            chrArray = reinterpret_cast<cocos2d::CCLabelBMFont*>(lines->objectAtIndex(line_idx))->getChildren();
-            for (unsigned int chr_idx = 0; chr_idx < chrArray->count(); chr_idx++){
-                reinterpret_cast<cocos2d::CCSprite*>(chrArray->objectAtIndex(chr_idx))->stopAllActions();
-            }
-        }
+    cocos2d::CCArray *chrArray, *lines = m_label->getChildren();
+    cocos2d::CCObject* line;
+    CCARRAY_FOREACH(lines, line){
+        chrArray = reinterpret_cast<cocos2d::CCLabelBMFont*>(line)->getChildren();
+        arrayMakeObjectsPerformSelector(chrArray, stopAllActions, cocos2d::CCSprite*);
     }
 }
 
 
-/* TODO: TextArea::update(float) it's just More tricky shit that I don't feel like putting time and energy into yet... */
+/* TODO: TextArea::update(float) it's just More tricky shit... */
+
 
 
