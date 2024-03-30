@@ -1,7 +1,7 @@
 
 <img src="Fmod-Logo.png">
 
-## FMOD Headers
+## Robtop's FMOD Library
 Header Files for FMod Inspired By Cocos-Headers
 
 This is where FMOD Releated Stuff to Geomtery Dash will be reverse eningeered.
@@ -24,5 +24,4 @@ Class Objects include all the Following
 - `FMODReverbPresent`
 - `FMODMusic`
 
-These Files will be Seperate C++ files and headers until all class objects have been decompiled. Note that these will not require data directly from fmod excluding the use of Fmod's functions
-and objects...
+These will only require One Header File and C++ File to be worked on, note that these will not require all the data directly from fmod excluding the use of Fmod's functions and objects...
