@@ -151,7 +151,7 @@ void FLAlertLayer::onEnter()
     if (m_bTouchEnabled) {
         registerWithTouchDispatcher();
     }
-    /* There's a problem with HJFod's CocosHeaders based on delegate names current so these will all be empty temporarly... */
+    /* There's a problem with HJFod's CocosHeaders based on delegate names currently so these will all be empty temporarly... */
     cocos2d::CCNode::onEnter();
     if (m_bAccelerometerEnabled) {
         director->getAccelerometer()->setDelegate(TODO /* FIX CLASS MEMBER NAMES!!! */);
