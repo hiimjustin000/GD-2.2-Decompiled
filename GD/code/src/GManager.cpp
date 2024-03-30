@@ -1,31 +1,31 @@
 #include "includes.h"
 #include "cocos2dx/support/zip_support/ZipUtils.h"
+#include "GManager.h"
 
 
 
 /* 
 I was able to possibly figure out the calls
 for  (code**)(in_r1->field0_0x0 + 0x1bc) 
-that ghidra generated  but I want to know how 
-to solve for it as they're not in the vtables 
-and I had to think logically about where 
-everything needed to go...
+but I want to know how to solve for it as 
+they're not in the vtables and I had to think 
+logically about where everything goes...
 
 0x1bc encodeDataTo
 0x1c0 dataloaded
 0x1c4 firstload
 
+Update: it's a vtable... -_-
 
-Update, those are Vtables
 */
 
 std::string GManager::getcompressedString(){
- return cocos2d::ZipUtils::compressString(getSaveString(), false, 0);
+    return cocos2d::ZipUtils::compressString(getSaveString(), false, 0);
 }
 
 std::string GManager::getSaveString(){
     DS_Dictionary* dsdict = new DS_Dictionary;
-    encodeDataTo(dsdict)
+    encodeDataTo(dsdict);
     std::string saveString = dsdict->saveRootSubDictToString();
     delete dsdict;
     return saveString;
@@ -39,14 +39,13 @@ bool GManager::init(){
 }
 
 bool GManager::load() {
-   return loadDataFromFile(m_filename);
+   return loadDataFromFile(m_fileName);
 }
 
 bool GManager::loadDataFromFile(std::string fileName){
     bool loadedData;
     std::string backup;
     DS_Dictionary *dsdict = new DS_Dictionary();
-    DS_Dictionary::DS_Dictionary(dsdict);
     if (!tryLoadData(dsdict, fileName)) {
         backup = fileName + "2.dat";
         /* Create a backup */
@@ -74,7 +73,7 @@ bool GManager::loadFromCompressedString(std::string compressedStr){
 bool GManager::loadFromString(std::string data){
     DS_Dictionary *dsdict = new DS_Dictionary();
     if (dsdict->loadRootSubDictFromString(data)) {
-        loaded = dataLoaded(dsdict);
+        auto loaded = dataLoaded(dsdict);
         delete dsdict;
         return loaded;
     }
@@ -85,3 +84,26 @@ bool GManager::loadFromString(std::string data){
 void GManager::save(){
     saveGMTo(m_fileName);
 }
+
+
+bool GManager::saveData(DS_Dictionary *dsdict, std::string fileName){
+    return dsdict->saveRootSubDictToCompressedFile(fileName.c_str());
+}
+
+void GManager::saveGMTo(std::string fileName){
+    DS_Dictionary *dsdict = new DS_Dictionary();
+    encodeDataTo(dsdict);
+    m_saved = saveData(dsdict, fileName);
+    delete dsdict;
+}
+
+void GManager::setup(){
+    m_setup = true;
+    load();
+}
+
+bool GManager::tryLoadData(DS_Dictionary *dsdict, std::string data){
+    return dsdict->loadRootSubDictFromCompressedFile(data.c_str());
+}
+
+

@@ -1,6 +1,5 @@
 #include "includes.h"
 
-/* Nice Manager :) - Calloc */
 
 bool GJMultiplayerManager::init()
 {
@@ -77,7 +76,7 @@ bool GJMultiplayerManager::exitLobby(int gameID)
     {
         addDLToActive(tag);
         std::string postData = getBasePostString();
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfv", "3899", 'g', 'c', "9")->getCString();
+        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfv", "3899", 'g', 'c', "9")->getCString(pCVar1);
         postData += cocos2d::CCString::createWithFormat("&gameID=%i&secret=%s", gameID, secret)->getCString();
         ProcessHttpRequest("https://www.geometrydash.com/database/exitMPLobby.php", postData, std::string(tag), (GJHttpType)0x3a);
     }
@@ -173,6 +172,7 @@ void GJMultiplayerManager::handleIt(bool success, std::string response, std::str
     }
 }
 
+
 void  GJMultiplayerManager::handleItDelayed(bool success,std::string response,std::string tag, int httpType)
 
 {
@@ -250,3 +250,4 @@ GJMultiplayerManager * GJMultiplayerManager::sharedState(){
 
 
 
+/* Nice Manager :) - Calloc */

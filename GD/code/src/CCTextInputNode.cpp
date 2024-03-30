@@ -3,9 +3,12 @@
 #include <cocos2d.h>
 #include <limits.h>
 
-/* If you don't know what IME Means I suggest looking it up, Same can be said about some of these blacklisted swearwords... - Calloc */
 
-/* TODO: I thought about writing robtop a little unique script for loading this balcklist as some words repeat themselves in here and I thought maybe I could be helpful by doing just that. */
+
+/* TODO: I thought about writing robtop a little unique script for loading this 
+balcklist as some words repeat themselves in here and I thought maybe I could be 
+helpful by doing just that. */
+
 cocos2d::CCArray *LoadGJBlacklist()
 {
     return cocos2d::CCArray::create(
@@ -291,8 +294,8 @@ void CCTextInputNode::addTextArea(TextArea *tArea)
     if (m_textArea == nullptr)
     {
         m_textArea = tArea;
-        addchild(tArea);
-        auto pos = m_textArea->setPosition(cocos2d::CCPoint(pos, pos >> 0x20));
+        addChild(tArea);
+        auto pos = m_textArea->setPosition(cocos2d::CCPoint(0.0,0.0));
         m_textField->setVisible(0);
         updateLabel(m_textField->getString());
         updateDefaultFontValues(m_textArea->m_textStr);
@@ -300,7 +303,7 @@ void CCTextInputNode::addTextArea(TextArea *tArea)
 }
 
 /* creates a ccrect based off ccpoint and textInputNode */
-cocos2d::CCRect create_ccrect(CCTextInputNode *textInputNode, cocos2d::CCPoint &_ccpoint)
+cocos2d::CCRect create_ccrect(CCTextInputNode *textInputNode, const cocos2d::CCPoint &_ccpoint)
 {
     cocos2d::CCRect rect;
     rect.origin = textInputNode->getPosition();
@@ -349,35 +352,35 @@ std::string CCTextInputNode::getString()
 }
 
 
-bool CCTextInputNode::init(float width, float height, const char *caption, const char *fontName, int fontSize, const char *fontName)
+bool CCTextInputNode::init(float width, float height, const char *caption, const char *FieldfontName, int fontSize, const char *LabelfontName)
 {
     if (!cocos2d::CCLayer::init()) return false;
     setTouchEnabled(true);
     m_filterSwearWords = false;
     m_caption = caption;
     /* I guess fontSize as an integer works?? */
-    m_textField  = cocos2d::CCTextFieldTTF::textFieldWithPlaceHolder(caption, fontName, fontSize);
+    m_textField  = cocos2d::CCTextFieldTTF::textFieldWithPlaceHolder(caption, FieldfontName, fontSize);
     addChild(m_textField);
-    m_textField->m_pDelegate = m_textFieldDelegate;
+    m_textField->setDelegate(m_textFieldDelegate);
     setContentSize(cocos2d::CCSize(width, height));
     m_maxLabelScale = 1.0;
     m_placeholderScale = 0.0;
     m_maxLabelWidth = width;
     // Unknown fields...
-    field_0x170 = 65535;
-    field_0x172 = 255;
+    // field_0x170 = 65535;
+    // field_0x172 = 255;
     m_textColor.r = 255;
     m_textColor.g = 255;
     m_textColor.b = 255;
     m_allowedChars = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    if (fontName != nullptr) {
-        m_placeholderLabel = cocos2d::CCLabelBMFont::create(caption, fontName);
+    if (LabelfontName != nullptr) {
+        m_placeholderLabel = cocos2d::CCLabelBMFont::create(caption, LabelfontName);
         addChild(m_placeholderLabel);
         m_textField->setVisible(false);
-        updateDefaultFontValues(std::string(fontName));
+        updateDefaultFontValues(std::string(LabelfontName));
     }
     m_cursor = cocos2d::CCLabelBMFont::create("|","chatFont.fnt");
-    addChild(cursor,  10);
+    addChild(m_cursor,  10);
     m_cursor->updateDisplayedOpacity(150);
     m_cursor->setVisible(false);
     return true;
@@ -386,7 +389,7 @@ bool CCTextInputNode::init(float width, float height, const char *caption, const
 
 
 
-void CCTextInputNode::keyboardWillHide(CCIMEKeyboardNotificationInfo *pSender)
+void CCTextInputNode::keyboardWillHide(cocos2d::CCIMEKeyboardNotificationInfo *pSender)
 {
     if (m_forceOffset == false)
     {
@@ -395,7 +398,7 @@ void CCTextInputNode::keyboardWillHide(CCIMEKeyboardNotificationInfo *pSender)
             m_unknown2 = false;
             if (m_delegate != nullptr)
             {
-                acceptVisitor(this);
+                m_delegate->textInputReturn(this);
             }
         }
     }
@@ -410,20 +413,18 @@ void CCTextInputNode::keyboardWillHide(CCIMEKeyboardNotificationInfo *pSender)
 }
 
 /* Could have something to do with what kind of device is being used in order to enter text in... */
-bool CCTextInputNode::keyboardWillShow(cocos2d::CCIMEKeyboardNotificationInfo *keyboard)
+bool CCTextInputNode::keyboardWillShow(cocos2d::CCIMEKeyboardNotificationInfo *pSender)
 {
     if ((m_forceOffset == false) && m_textField != nullptr && (m_selected != false))
     {
-        auto rect = create_ccrect(this, keyboardEnd.origin);
-
-        // UNKNOWN local_30 = local_30 - 4.0; maybe substraction of keyboardEnd with rect?
-
-        if (rect->intersectsRect(keyboard->end))
+        auto rect = create_ccrect(this, pSender->end.origin);
+        rect.origin.y -= 4.0;
+        if (rect.intersectsRect(pSender->end))
         {
             /* I don't understand this part all that well since it's got missing moving parts to it... */
             m_unknown2 = true;
-            float maxY = keyboard.getMaxY();
-            float minY = keyboard.getMinY();
+            float maxY = pSender->end.getMaxY();
+            float minY = pSender->end.getMinY();
             if (m_delegate != nullptr)
             {
                 return isEqual(m_textField);
@@ -435,12 +436,12 @@ bool CCTextInputNode::keyboardWillShow(cocos2d::CCIMEKeyboardNotificationInfo *k
 
 void CCTextInputNode::setLabelNormalColor(cocos2d::ccColor3B color)
 {
-    m_cColour = color;
+    m_cColor = color;
 }
 
 void CCTextInputNode::setString(std::string str)
 {
-    m_textField->setString(str);
+    m_textField->setString(str.c_str());
     updateLabel(str);
     if (m_delegate != nullptr)
         m_delegate->textChanged(this);
@@ -448,7 +449,7 @@ void CCTextInputNode::setString(std::string str)
 
 
 
-void CCTextInputNode::setDelegate(TextInputDelegate* delegate) {
+void CCTextInputNode::setDelegate(TextInputNodeDelegate* delegate) {
 	m_delegate = delegate;
 }
 
@@ -477,15 +478,15 @@ void CCTextInputNode::setLabelPlaceholderColor(cocos2d::ccColor3B color) {
 	refreshLabel();
 }
 
-void CCTextInputNode::setAllowedChars(gd::string filter) {
+void CCTextInputNode::setAllowedChars(std::string filter) {
     m_allowedChars = filter;
 }
 
 
 /* Determines if Keyboard is going to be open or closed and then returns a boolean */
-bool CCTextInputNode::onClickTrackNode(bool openIME)
+bool CCTextInputNode::onClickTrackNode(bool isKeyboardOpen)
 {
-    return openIME ? m_textField->attachWithIME() : m_textField->detachWithIME();
+    return isKeyboardOpen ? m_textField->attachWithIME() : m_textField->detachWithIME();
 }
 
 bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
@@ -496,7 +497,8 @@ bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
         m_cursor->setVisible(true);
     }
     m_selected = true;
-    PlatformToolbox::setKeyboardState(1);
+    // Undefined
+    // PlatformToolbox::setKeyboardState(1);
     
     if (m_doubleInput) {
         cstr = m_textField->getString();
@@ -505,7 +507,7 @@ bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
         }
     }
     cstr = m_textField->getString();
-    if (std::string(str) == "") {
+    if (std::string(cstr) == "") {
         if (m_placeholderLabel == nullptr) {
             if (m_textArea != nullptr) {
                 m_textArea->setString(cstr);
@@ -527,7 +529,7 @@ bool CCTextInputNode::onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF *tField)
         /* It could be this although I'm a little questioned about it... */
         float minX = rect.getMinX() - 4.0;
         if (m_delegate != nullptr) {
-            success = m_delegate->textInputShouldOffset(this, minX * 0.5 - rect->getMinY());
+            success = m_delegate->textInputShouldOffset(this, minX * 0.5 - rect.getMinY());
         }
     } 
     return success;
@@ -543,7 +545,7 @@ bool CCTextInputNode::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *tField)
 
     if (m_filterSwearWords != false)
     {
-        char *t_string = tField->getString();
+        const char *t_string = tField->getString();
         std::string textString = "";
         std::string passedString(t_string);
 
@@ -558,14 +560,15 @@ bool CCTextInputNode::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *tField)
 
         size_t pos = 0;
         std::string idx;
+        
         /* Text Replacement (To prevent Swearword bypassing )*/
         for (unsigned int i = 0; translations->count() <= 0; i += 2)
         {
-            idx = (reinterpret_cast<cocos2d::CCString *>(translations->objectAtIndex(translations, i)))->getCString();
+            idx = (reinterpret_cast<cocos2d::CCString *>(translations->objectAtIndex(i)))->getCString();
             pos = textString.find(idx);
             if (pos != std::string::npos)
             {
-                textString.replace(pos, idx->size(), ((reinterpret_cast<cocos2d::CCString *>(translations->objectAtIndex(translations, i + 1)))->getCString()));
+                textString.replace(pos, idx.size(), ((reinterpret_cast<cocos2d::CCString *>(translations->objectAtIndex(i + 1)))->getCString()));
             }
         }
 
@@ -576,7 +579,7 @@ bool CCTextInputNode::onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF *tField)
             pos = textString.find(idx);
             if (pos != std::string::npos)
             {
-                textString.replace(pos, idx->size(), " ");
+                textString.replace(pos, idx.size(), " ");
                 SaidCurseWord = true;
             }
         }
@@ -631,9 +634,9 @@ void CCTextInputNode::updateBlinkLabelToChar(int blinkLabel)
         {
             if (blinkLabel > -1)
             {
-                for (unsigned int i = 0; i < m_textArea->m_labels->count(); i++)
+                for (unsigned int i = 0; i < m_textArea->getChildrenCount(); i++)
                 {
-                    m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont *>(m_textArea->m_labels->objectAtIndex(i));
+                    m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont *>(m_textArea->getChildren()->objectAtIndex(i));
                     auto labelChildren = m_placeholderLabel->getChildren();
                     auto labelChildPopultation = labelChildren->count();
                     if (blinkLabel <= static_cast<int>(labelChildPopultation))
@@ -646,18 +649,19 @@ void CCTextInputNode::updateBlinkLabelToChar(int blinkLabel)
      
             /* Robtop, Why overflow? :( */
             blinkLabel = 0xffffffff;
-            m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont*>(m_textArea->m_labels->lastObject());
-            m_placeholderLabel->removeParent();
-            m_placeholderLabel->setPosition(m_placeholderLabel->convertToWorldSpace(m_textArea->getParent()));
+            m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont*>(m_textArea->m_bitmapFont->getChildren()->lastObject());
+            m_placeholderLabel->removeFromParent();
+            m_placeholderLabel->setPosition(m_placeholderLabel->convertToWorldSpace(m_textArea->m_bitmapFont->getParent()->getPosition()));
         }
      
-        m_textArea->m_labels = m_placeholderLabel->getChildren();
-        if ((blinkLabel < 0) || ( blinkLabel => cocos2d::CCArray::count(m_labels))) {
-            m_placeholderLabel->setScale(m_placeholderLabel->getScaledContentSize(m_placeholderLabel));
-            // m_placeholderLabel->setScaleY();
+        auto children = m_textArea->m_bitmapFont->getChildren();
+        children = m_placeholderLabel->getChildren();
+        if ((blinkLabel < 0) || ( blinkLabel >= children->count())) {
+            m_placeholderLabel->setScaleX(m_placeholderLabel->getScaledContentSize().width);
+            m_placeholderLabel->setScaleY(m_placeholderLabel->getScaledContentSize().height);
         }
         else {
-            m_placeholderLabel->getLetterPosXLeft(m_textArea->m_labels->objectAtIndex(blinkLabel), this->m_fontValue2,this->m_isCharFont);
+            // m_placeholderLabel->set(m_textArea->getChildren()->objectAtIndex(blinkLabel), m_fontValue2, m_isChatFont);
             // m_placeholderLabel->setScaleY();
         }
 
@@ -691,14 +695,14 @@ void CCTextInputNode::updateCursorPosition(cocos2d::CCPoint point, cocos2d::CCRe
 
         if (m_placeholderLabel == nullptr)
         {
-            unsigned int count = m_textArea->m_labels->count();
+            unsigned int count = m_textArea->m_bitmapFont->getChildrenCount();
             if (count == 0)
             {
                 return;
             }
             else if (count == 1)
             {
-                m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont *> m_textArea->m_labels->objectAtIndex(0);
+                m_placeholderLabel = reinterpret_cast<cocos2d::CCLabelBMFont *> (m_textArea->m_bitmapFont->getChildren()->objectAtIndex(0));
             }
             else
             {
@@ -709,9 +713,9 @@ void CCTextInputNode::updateCursorPosition(cocos2d::CCPoint point, cocos2d::CCRe
                 unsigned int i = 0;
                 while (i < count)
                 {
-                    node = reinterpret_cast<cocos2d::CCNode *>(m_textArea->m_labels->objectAtIndex(i));
+                    node = reinterpret_cast<cocos2d::CCNode *>(m_textArea->m_bitmapFont->getChildren()->objectAtIndex(i));
                     node->getParent()->convertToWorldSpace(point);
-                    i += node->getContentSize();
+                    i += node->getChildrenCount();
                 }
             }
 
@@ -725,8 +729,8 @@ void CCTextInputNode::updateCursorPosition(cocos2d::CCPoint point, cocos2d::CCRe
 /* this is also apart of CCTextInputNode's init function */
 void CCTextInputNode::updateDefaultFontValues(std::string fontName)
 {
-    m_isCharFont = fontName != "chatFont.fnt";
-    if (!m_isCharFont)
+    m_isChatFont = fontName != "chatFont.fnt";
+    if (!m_isChatFont)
     {
         /* CCSize ? */
         m_fontValue2 = 20.0;
@@ -755,19 +759,22 @@ void CCTextInputNode::updateLabel(std::string label)
     }
     if (label == "" && m_textArea != nullptr)
     {
-        m_textArea->setString(label->c_str());
+        m_textArea->setString(label.c_str());
     }
     else
     {
-        m_placeholderLabel->setString(label->c_str());
+        m_placeholderLabel->setString(label.c_str());
     }
     refreshLabel();
     m_placeholderLabel->updateLabel();
     std::string textFiledStr = m_textField->getString();
     if (textFiledStr == "")
     {
-        m_textField->point = 0xffffffff;
+        m_textField->setAnchorPoint(0xffffffff);
     }
     updateBlinkLabel();
 }
+
+
+
 

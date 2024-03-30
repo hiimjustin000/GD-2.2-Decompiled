@@ -1,7 +1,7 @@
 #include "../headers/includes.h"
 #include "TextArea.h"
 
-/* NOTE: These functions have all changed since 2.1 */
+/* NOTE: These functions have all changed since 2.1 and have different functionality to it */
 
 /* TODO: */
 /* MultilineBitmapFont::createWithFont */
@@ -9,7 +9,9 @@
 /* TODO: */
 /* MultilineBitmapFont::initWithFont */
 
-/* TODO: Rename m_coloredText to m_specialDescriptors? */
+/* TODO: Rename m_coloredText to specialDescriptors? */
+
+
 
 
 void  MultilineBitmapFont::moveSpecialDescriptors(int pos,int size){

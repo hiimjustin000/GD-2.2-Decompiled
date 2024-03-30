@@ -31,7 +31,7 @@ bool LoadingCircle::init()
 
 void LoadingCircle::draw()
 {
-    /* It had to be written this way otherwise we would be caught in a dead-loop */
+    /* It had to be written this way otherwise we would be caught int a dead-loop */
     if (m_needsRendering)
         cocos2d::CCLayerColor::draw();
 }
@@ -52,7 +52,7 @@ void LoadingCircle::registerWithTouchDispatcher()
     cocos2d::CCTouchDispatcher::addTargetedDelegate(cocos2d::CCDirector::sharedDirector()->getKeypadDispatcher(), m_touchDelegate, -0x7fffffff /* <<<- Robtop Why? */, true);
 }
 
-
+/* TODO: Ask Robtop About LoadingCircle::show specfically the unknown parts... */
 void LoadingCircle::show(LoadingCircle *this)
 {
     /* Unknown Part */

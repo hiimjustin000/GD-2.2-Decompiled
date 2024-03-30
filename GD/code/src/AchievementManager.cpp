@@ -669,7 +669,7 @@ void AchievementManager::addManualAchievements()
 }
 
 
-bool AchievementManager::areAchievementsEarned(AchievementManager *this,CCArray *arr)
+bool __thiscall AchievementManager::areAchievementsEarned(cocos2d::CCArray *arr)
 {
     bool earned = false;
     unsigned int i = 0;
@@ -677,7 +677,7 @@ bool AchievementManager::areAchievementsEarned(AchievementManager *this,CCArray 
         if (arr->count() <= i) {
           return true;
         }
-        earned = isAchievementEarned((reinterpret_cast<cocos2d::CCString*>(cocos2d::CCArray::objectAtIndex(arr, i)))->getCString());
+        earned = isAchievementEarned((reinterpret_cast<cocos2d::CCString*>(arr->objectAtIndex(i)))->getCString());
         if (!earned) 
             break;
         i++;
@@ -689,7 +689,7 @@ bool AchievementManager::areAchievementsEarned(AchievementManager *this,CCArray 
 
 
 
-void AchievementManager::dataLoaded(AchievementManager *this,DS_Dictionary *dsdict)
+void AchievementManager::dataLoaded(DS_Dictionary *dsdict)
 {
     cocos2d::CCDictionary *reportedAchievements = dsdict->getDictForKey("reportedAchievements",0);
     if (m_reportedAchievements != nullptr) {
@@ -1165,8 +1165,10 @@ AchievementManager * AchievementManager::sharedState()
         GLOBAL_AchievementManager->m_reportedAchievements = nullptr;
         GLOBAL_AchievementManager->m_dontNotify = false;
         GLOBAL_AchievementManager->m_allAchievementsSorted = nullptr;
-        GLOBAL_AchievementManager->m_order = 0;
-        GLOBAL_AchievementManager->m_unAchieved =  nullptr;
+        // Unknown...
+        // GLOBAL_AchievementManager->field180_0x124 = 0;
+        // GLOBAL_AchievementManager->field181_0x128 = (CCString *)0x0;
+        GLOBAL_AchievementManager = this;
         GLOBAL_AchievementManager->init();
     }
     return GLOBAL_AchievementManager;

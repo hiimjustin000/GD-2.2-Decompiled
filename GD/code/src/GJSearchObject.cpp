@@ -1,8 +1,7 @@
 #include "includes.h"
-/* Will fix this later... */
 #include "GJSearchObject.h"
 
-static GJSearchObject *GJSearchObject::create(
+GJSearchObject *GJSearchObject::create(
     SearchType searchType, std::string searchQuery, std::string difficulty,
     std::string length, int page, bool star, bool uncompleted, bool featured,
     int songID, bool original, bool twoPlayer, bool customSong, bool songFilter,
@@ -22,19 +21,19 @@ static GJSearchObject *GJSearchObject::create(
     CC_SAFE_DELETE(searchObject);
     return nullptr;
 }
-static GJSearchObject *GJSearchObject::create(SearchType searchType, std::string searchQuery)
+GJSearchObject *GJSearchObject::create(SearchType searchType, std::string searchQuery)
 {
     return create(searchType, searchQuery, "-", "-", 0, false, false, false, 0, false, false, false, false, false, false, false, false, false, false, 0, 0, 0);
 }
 
-static GJSearchObject *GJSearchObject::create(SearchType searchType)
+GJSearchObject *GJSearchObject::create(SearchType searchType)
 {
     return create(searchType, "", "-", "-", 0, false, false, false, 0, false, false, false, false, false, false, false, false, false, false, 0, 0, 0);
 }
 
 const char *GJSearchObject::getKey()
 {
-    return getSearchKey(m_seachType, m_searchQuery, m_difficulty,
+    return getSearchKey(m_searchType, m_searchQuery, m_difficulty,
                         m_length, m_page, m_starFilter,
                         m_searchIsOverlay, m_original, m_songID,
                         m_originalFilter, m_twoPlayerFilter,
@@ -46,7 +45,7 @@ const char *GJSearchObject::getKey()
 
 const char *GJSearchObject::getNextPageKey()
 {
-    return getSearchKey(m_seachType, m_searchQuery, m_difficulty,
+    return getSearchKey(m_searchType, m_searchQuery, m_difficulty,
                         m_length, m_page + 1, m_starFilter,
                         m_searchIsOverlay, m_original, m_songID,
                         m_originalFilter, m_twoPlayerFilter,
@@ -82,7 +81,7 @@ GJSearchObject *GJSearchObject::getPrevPageObject()
     return getPageObject((m_page < 1) ? 0 : m_page - 1);
 }
 
-static const char *GJSearchObject::getSearchKey(
+const char *GJSearchObject::getSearchKey(
     SearchType searchType, std::string searchQuery, std::string difficulty, std::string length,
     int page, bool star, bool uncompleted, bool featured, int songID, bool original, bool twoPlayer,
     bool customSong, bool songFilter, bool noStar, bool coins, bool epic, bool legendary, bool mythic,
@@ -110,7 +109,7 @@ bool GJSearchObject::init(
     bool customSong, bool songFilter, bool noStar, bool coins, bool epic, bool legendary, bool mythic,
     bool onlyCompleted, int demonFilter, int folder, int searchMode)
 {
-    m_seachType = searchType;
+    m_searchType = searchType;
     m_searchQuery = searchQuery;
     m_difficulty = difficulty;
     m_length = length;
@@ -137,7 +136,7 @@ bool GJSearchObject::init(
 
 bool GJSearchObject::isLevelSearchObject()
 {
-    if (m_seachType < 0xb){
+    if (m_searchType < 0xb){
         if ((m_searchType < 9) && (m_searchType != 5)){
             return this->m_searchMode == 0;
         }

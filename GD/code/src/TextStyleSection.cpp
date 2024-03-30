@@ -49,4 +49,3 @@ bool TextStyleSection::init(int _start, int _end, TextStyleType style){
     return true;
 }
 
-

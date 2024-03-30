@@ -206,15 +206,15 @@ void GameLevelManager::getGJDailyLevelState(int levelType)
     const char *key;
     if (levelType == 1)
     {
-        key = 0xde;
+        key = "\xde";
     }
     else if (levelType == 2)
     {
-        key = 0xeb;
+        key = "\xeb";
     }
     else
     {
-        key = 0xcc;
+        key = "\xcc";
     }
     if (!isDLActive(key))
     {
@@ -701,5 +701,3 @@ void GameLevelManager::getLevelLists(GJSearchObject *searchObject)
         ProcessHttpRequest("https://www.boomlings.com/database/getGJLevelLists.php", postStr, dl_key, 0x3c);
     }
 }
-
-

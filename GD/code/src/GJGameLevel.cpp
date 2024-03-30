@@ -68,7 +68,6 @@ void GJGameLevel::copyLevelInfo(GJGameLevel *LevelInfo)
     m_sfxIDs = LevelInfo->m_sfxIDs;
     m_songIDs = LevelInfo->m_songIDs;
     m_54 = LevelInfo->m_54;
-    return;
 }
 
 GJGameLevel *static GJGameLevel::create()
@@ -239,7 +238,7 @@ GJGameLevel *static GJGameLevel::create()
     repair this one function from the awful mess ghidra had generated for me.
     At least the result when repaired was satisfying...
 
-    TODO: Ask Robtop if the keys used are actually or Macros
+    TODO: Ask Robtop if the keys used are actually enums
 */
 
 static GJGameLevel *create(cocos2d::CCDictionary *dict, bool has_password)
@@ -505,7 +504,8 @@ int GJGameLevel::getLastBuildPageForTab(int page){
     return m_lastBuildSave->valueForKey(cocos2d::CCString::createWithFormat("%i", page)->getCString())->intValue();
 }
 
-GJLength GJGameLevel::getLengthKey(int seconds, bool platformer) {
+GJLength GJGameLevel::getLengthKey(int seconds, bool platformer)
+{
     if (platformer){
         return kGJLengthPlat;
     }
@@ -714,7 +714,7 @@ StoreAndExit:
 
 
 
-/* I had a python script write me and reverse this RSV shit
+/* I had a python script write me write and reverse this RSV shit
  * since it got repettative and annoying. I will have it in my
  * micellaneous tools repository for you soon... */
 
@@ -808,11 +808,21 @@ void GJGameLevel::setStars(int stars){
 }
 
 
+/* TODO: aks Robtop */
+bool GJGameLevel::shouldCheatReset(){  
+  if ((m_stars > 7) && (m_jumps < 50)) {
+        return m_clicks > 49 ? false : (bool)(m_clicks < 50);
+  }
+  return false;
+}
+
+
+
 /* AntiCheat */
 bool GJGameLevel::shouldCheatReset(){  
-  if ((7 < m_stars_Random - m_stars_Seed) && (m_jumps_Random - m_jumps_Seed < 0x32)) {
+  if ((m_stars_Random - m_stars_Seed > 7) && (m_jumps_Random - m_jumps_Seed < 50)) {
         int clicks = m_clicks_Random - m_clicks_Seed;
-        return clicks <= 49;
+        return clicks > 49 ? false : (bool)(clicks < 50);
   }
   return false;
 }

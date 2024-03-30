@@ -186,4 +186,4 @@ namespace rtsha1
         }
         hexstring[40] = 0;
     }
-} // namespace rtsha1
+} // namespace sha1

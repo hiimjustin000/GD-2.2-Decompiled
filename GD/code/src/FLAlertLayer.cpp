@@ -50,22 +50,22 @@ void FLAlertLayer::ccTouchMoved(cocos2d::CCTouch *touch,cocos2d::CCEvent *event)
         if (m_controlConnected != touch->getID()) {
             return;
         }
-        m_buttonMenu = m_scrollingLayer;
+        // m_buttonMenu = m_scrollingLayer;
     }
     m_buttonMenu->ccTouchMoved(touch, event);
 }
 
 FLAlertLayer * FLAlertLayer::create(FLAlertLayerProtocol *delegate,const char *title, const std::string &desc,const char *btn1,const char *btn2, float width,bool scroll,float height,float textScale){
     FLAlertLayer* layer = new FLAlertLayer;
-    if (layer->init(delegate, title, desc , btn1, btn2, width, scroll, height, textScale)){
-        layer->autorelease();
-        return layer;
-    }
+    // if (layer->init(delegate, title, desc , btn1, btn2, width, scroll, height, textScale)){
+    //     layer->autorelease();
+    //     return layer;
+    // }
     CC_SAFE_DELETE(layer);
     return nullptr;
 };
 
-FLAlertLayer* FLAlertLayer::create(char const* title, const std::string& desc, char const* btn) {
+FLAlertLayer* create(char const* title, const std::string& desc, char const* btn) {
 	return FLAlertLayer::create(nullptr, title, desc, btn, nullptr, 300.0);
 }
 
@@ -85,7 +85,7 @@ void FLAlertLayer::incrementForcePrio(){
 }
 
 /* I'll deal with the inits later in the future unless someone wants to go ahead and handle them for me... 
- * I wouldn't say they are big, but rather a nightmarish puzzle that I don't want to deal with at the moment */
+ * I wouldn't say they are being but rather a nightmarish puzzle that I don't want to deal with at the moment */
 
 
 void FLAlertLayer::keyDown(cocos2d::enumKeyCodes keycodes){
@@ -151,8 +151,7 @@ void FLAlertLayer::onEnter()
     if (m_bTouchEnabled) {
         registerWithTouchDispatcher();
     }
-    /* There's a problem with HJFod's CocosHeaders based on delegate names because Guess what? They all overlap when they shouldn't that's a NONO!!! 
-	So these will all be empty until they are repaired... */
+    /* There's a problem with HJFod's CocosHeaders based on delegate names current so these will all be empty temporarly... */
     cocos2d::CCNode::onEnter();
     if (m_bAccelerometerEnabled) {
         director->getAccelerometer()->setDelegate(TODO /* FIX CLASS MEMBER NAMES!!! */);
