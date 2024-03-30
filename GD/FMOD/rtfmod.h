@@ -4,6 +4,8 @@
 #include "FMOD/fmod.hpp"
 #include "../includes.h"
 #include <unordered_set>
+#include <map>
+#include <unordered_map>
 
 /* Robtop's FMOD Library */
 
@@ -22,10 +24,40 @@ class FMODSound {
 
 };
 
-
-class FMODAudioState{
+class FMODSoundState{
 
 };
+
+class FMODSoundTween{
+
+};
+
+class FMODAudioState {
+public:
+	// ~FMODAudioState();
+	FMODAudioState();
+	FMODAudioState operator=(FMODAudioState const&);
+	unsigned int unknown0;
+	unsigned int unknown1;
+	std::map<std::pair<int,int>,FMODSoundTween> unknownMap0;
+  	std::map<std::pair<int,int>,FMODSoundTween> unknownMap1;
+  	std::map<std::pair<int,int>,FMODSoundTween> unknownMap2;
+	std::unordered_map<int, float> volumeRelated00;
+	std::unordered_map<int, float> volumeRelated01;
+	std::unordered_map<int, float> pitchRelated0;
+	std::unordered_map<int, float> volumeRelated10;
+	std::unordered_map<int, float> volumeRelated11;
+	std::unordered_map<int, float> pitchRelated1;
+	std::unordered_map<int, float> unknownUMap6;
+	std::unordered_map<int, float> unknownUMap7;
+	std::unordered_map<int, float> unknownUMap8;
+  	std::unordered_map<int, float> unknownUMap9;
+	std::unordered_map<int, FMODQueuedMusic> m_needLoadMusic;
+	std::unordered_map<int, FMODQueuedMusic> m_queuedMusic;
+	std::unordered_map<int, FMODSoundState> unknownUMap12;
+	uint64_t unknown2;
+};
+
 
 class FMODReverbPreset{
 
