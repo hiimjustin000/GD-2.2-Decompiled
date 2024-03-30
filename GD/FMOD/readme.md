@@ -2,7 +2,7 @@
 <img src="Fmod-Logo.png">
 
 ## Robtop's FMOD Library
-Header Files for FMod Inspired By Cocos-Headers
+Header Files and reversed C++ code for FMod related stuff Inspired By Cocos-Headers
 
 This is where FMOD Releated Stuff to Geomtery Dash will be reverse eningeered.
 
