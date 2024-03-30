@@ -1,4 +1,4 @@
-#include "includes"
+#include "includes.h"
 
 class DialogObject : public cocos2d::CCObject {
     public:
@@ -11,4 +11,6 @@ class DialogObject : public cocos2d::CCObject {
 
         static DialogObject* create(std::string _title, std::string _text, int _type, float _width, bool _canSkip, cocos2d::ccColor3B _colour);
         bool init(std::string _title, std::string _text, int _type, float _width, bool _canSkip, cocos2d::ccColor3B _colour);
-}
+};
+
+

@@ -1,22 +1,23 @@
 #include "includes.h"
 
 
+/* NOTE This has been updated and we have newer information for it...*/
 
 class ButtonSprite : public cocos2d::CCSprite
 {
-	ButtonType m_eButtonType;
-	float m_fAbsoluteWidth;
-	float m_fCustomWidth;
-	float m_fScale;
-	float m_fHeight;
-	bool m_bAbsolute;
-	cocos2d::CCLabelBMFont* m_pLabel;
-	cocos2d::CCSprite* m_pCustomTexture;
-	cocos2d::CCSprite* m_pBtnTextureName;
+	// ButtonType m_eButtonType;
+	// float m_fAbsoluteWidth;
+	// float m_fCustomWidth;
+	// float m_fScale;
+	// float m_fHeight;
+	// bool m_bAbsolute;
+	// cocos2d::CCLabelBMFont* m_pLabel;
+	// cocos2d::CCSprite* m_pCustomTexture;
+	// cocos2d::CCSprite* m_pBtnTextureName;
 	cocos2d::extension::CCScale9Sprite* m_pBackgroundImage;
-	cocos2d::CCPoint m_obTextPosition;
-	cocos2d::CCPoint m_obSpriteOffset;
-	std::string m_sString;
+	// cocos2d::CCPoint m_obTextPosition;
+	// cocos2d::CCPoint m_obSpriteOffset;
+	// std::string m_sString;
 
 	ButtonSprite();
 

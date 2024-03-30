@@ -16,6 +16,7 @@ class CCTextInputNode;
 
 /* NOTE: I think these are virtual - Calloc */
 class TextInputNodeDelegate {
+public:
 	virtual void textChanged(CCTextInputNode* textInputNode);
 	virtual void enterPressed(CCTextInputNode* textInputNode);
 	virtual bool allowTextInput(CCTextInputNode* textInputNode);
@@ -86,7 +87,7 @@ class CCTextInputNode : public cocos2d::CCLayer, cocos2d::CCIMEDelegate, cocos2d
 
 	void addTextArea(TextArea *tArea);
 	bool ccTouchBegan(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
-	bool init(float width, float height, const char *caption, const char *fontName, int fontSize, const char *fontName);
+	bool init(float width, float height, const char *caption, const char *FieldfontName, int fontSize, const char *LabelfontName);
 	void forceOffset();
 	std::string getString();
 	bool keyboardWillShow(cocos2d::CCIMEKeyboardNotificationInfo *keyboard);
@@ -96,7 +97,7 @@ class CCTextInputNode : public cocos2d::CCLayer, cocos2d::CCIMEDelegate, cocos2d
 
 
 	bool onTextFieldAttachWithIME(cocos2d::CCTextFieldTTF* tField);
-	void onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF* tField);
+	bool onTextFieldDetachWithIME(cocos2d::CCTextFieldTTF* tField);
 
 	void setString(std::string cstr);
 	void setMaxLavelScale(float v);

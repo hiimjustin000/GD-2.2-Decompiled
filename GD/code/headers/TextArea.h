@@ -3,8 +3,7 @@
 
 #include "includes.h"
 
-/* NOTE: TextArea's Only Subclass is CCTextFieldTTF 
- * otherwise many functions would me considered Ambigous */
+
 
 class TextArea : public cocos2d::CCTextFieldTTF {
 public:

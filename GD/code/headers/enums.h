@@ -87,3 +87,14 @@ enum UserListType {
 	kUserListTypeGetBlocked = 1
 };
 
+enum GJTimedLevelType {
+	kGJTimedLevelTypeDaily = 0,
+	kGJTimedLevelTypeWeekly = 1,
+	kGJTimedLevelTypeEvent = 2
+};
+
+enum CommentType {
+	kCommentTypeLevelType = 0,
+	kCommentTypeMessageType = 2,
+	
+};

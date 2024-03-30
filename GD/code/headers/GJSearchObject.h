@@ -13,7 +13,7 @@ typedef int SearchType;
 
 class GJSearchObject : public cocos2d::CCNode
 {
-    SearchType m_seachType;
+	SearchType m_searchType;
     std::string m_searchQuery;
     std::string m_difficulty;
     std::string m_length;
@@ -56,7 +56,11 @@ class GJSearchObject : public cocos2d::CCNode
 	GJSearchObject * getPrevPageObject();
 	static GJSearchObject * createFromKey(char *key);
 	const char* getKey();
-	bool isLevelSearchObject();
+    const char* getNextPageKey();
+    GJSearchObject* getNextPageObject();
+    GJSearchObject* getPageObject(int page);
+    bool isLevelSearchObject();
+
 };
 
 #endif // __GJSEARCHOBJECT_H__

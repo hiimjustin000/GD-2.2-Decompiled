@@ -1,3 +1,7 @@
+#ifndef __CUSTOM_H__
+#define __CUSTOM_H__
+
+
 #include "includes.h"
 
 class RobTop
@@ -13,8 +17,9 @@ namespace Globals
     const std::string XORAccountPassword = "37526";
     int ShardTypes[5] = {1, 2, 3, 4, 5};
 
-    cocos2d::CCPoint *gScollLayerPos = { 0.0f , 0.0f };
-    cocos2d::ccColor3B gNormalBarCol = { 0x00, 0xFF, 0x00 };
-    cocos2d::ccColor3B gPracticeBarCol = { 0x00, 0xFF, 0xFF };
+    static cocos2d::CCPoint *gScollLayerPos = { 0.0f , 0.0f };
+    static cocos2d::ccColor3B gNormalBarCol = { 0x00, 0xFF, 0x00 };
+    static cocos2d::ccColor3B gPracticeBarCol = { 0x00, 0xFF, 0xFF };
     bool gClickedPlay = false;
 }
+#endif // __CUSTOM_H__

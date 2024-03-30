@@ -4,19 +4,17 @@
 #include "includes.h"
 
 /* TODO */
-class ScrollingLayer : public cocos2d::CCLayerColor {
+class ScrollingLayer : public cocos2d::CCLayerColor{
 
 };
 
-/* TODO */
-class FLAlertLayerProtocol {
+class FLAlertLayerProtocol;
 
-};
 
 class FLAlertLayer : public cocos2d::CCLayerColor {
     
 public:
-  cocos2d::CCMenu* m_buttonMenu;
+    cocos2d::CCMenu* m_buttonMenu;
 	FLAlertLayerProtocol* m_alertProtocol;
 	cocos2d::CCNode* m_scene;
 	bool m_reverseKeyBack;
@@ -36,21 +34,22 @@ public:
 
 
 
-  bool ccTouchBegan(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
-  void ccTouchEnded(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
-  void ccTouchMoved(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
+    bool ccTouchBegan(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
+    void ccTouchEnded(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
+    void ccTouchMoved(cocos2d::CCTouch *touch, cocos2d::CCEvent *event);
 
-  static FLAlertLayer* create(FLAlertLayerProtocol *delegate,const char *title,const std::string &desc,const char *btn1,const char *btn2, float width,bool scroll,float height,float textScale);
+    static FLAlertLayer* create(FLAlertLayerProtocol *delegate,const char *title,const std::string &desc,const char *btn1,const char *btn2, float width,bool scroll,float height,float textScale);
 	static FLAlertLayer* create(FLAlertLayerProtocol* delegate, char const* title, const std::string &desc, char const* btn1, char const* btn2, float width);
 	static FLAlertLayer* create(char const* title, const std::string& desc, char const* btn);
 
 	void incrementForcePrio();
 
 
-  void keyDown(cocos2d::enumKeyCodes keycodes);
+    void keyDown(cocos2d::enumKeyCodes keycodes);
 	void onBtn1(cocos2d::CCObject *pSender);
 	void onBtn2(cocos2d::CCObject *pSender);
 
+	void show();
 
 	void onEnter();
 	void registerWithTouchDispatcher();

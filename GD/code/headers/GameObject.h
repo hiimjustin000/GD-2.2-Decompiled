@@ -1,6 +1,9 @@
+#ifndef __GAMEOBJECT_H__
+#define __GAMEOBJECT_H__
+
 #include "includes.h"
 
-class GameObject : public CCSpritePlus
+class GameObject : public cocos2d::CCSprite
 {
 	bool m_bUnk3;
 	bool m_bIsBlueMaybe;
@@ -20,8 +23,8 @@ class GameObject : public CCSpritePlus
 	bool m_bEditor;
 	bool m_bGroupDisabled;
 	bool m_bColourOnTop;
-	GJSpriteColor* m_pMainColourMode;
-	GJSpriteColor* m_pSecondaryColourMode;
+	// GJSpriteColor* m_pMainColourMode;
+	// GJSpriteColor* m_pSecondaryColourMode;
 	bool m_bCol1;
 	bool m_bCol2;
 	cocos2d::CCSize m_obPos;
@@ -59,7 +62,7 @@ class GameObject : public CCSpritePlus
 	bool m_bIsOrientedRectDirty;
 	bool m_bHasBeenActivated;
 	bool m_bHasBeenActivatedP2;
-	BYTE PAD2[8]
+	BYTE PAD2[8];
 	bool m_bObjectRectDirty;
 	bool m_bOrientedRectDirty;
 	bool m_bUniqueActivated;
@@ -83,7 +86,7 @@ class GameObject : public CCSpritePlus
 	bool m_bSnappedRotation;
 	cocos2d::CCSize m_obScaleMod;
 	int m_nUniqueID;
-	GameObjectType m_eGameObjectType;
+	// GameObjectType m_eGameObjectType;
 	int m_nSectionIdx;
 	bool m_bTouchTriggered;
 	bool m_bSpawnTriggered;
@@ -134,8 +137,8 @@ class GameObject : public CCSpritePlus
 	float m_fSlopeAngle;
 	bool m_bHazardousSlope;
 	float dword18C;
-	GJSpriteColor* m_pColour1;
-	GJSpriteColor* m_pColour2;
+	// GJSpriteColor* m_pColour1;
+	// GJSpriteColor* m_pColour2;
 	bool m_bBlendingBatchNode;
 	int m_nDefaultZLayer;
 	int m_nZLayer;
@@ -165,7 +168,7 @@ class GameObject : public CCSpritePlus
 	cocos2d::CCPoint m_obLastPosition;
 	bool m_bDidUpdateLastPosition;
 	bool m_bUpdateLastPos;
-	BYTE PAD3[4]
+	BYTE PAD3[4];
 	bool m_bSyncedAnimation;
 	int m_eLavaBubbleColourID;
 	bool dword210;
@@ -189,3 +192,5 @@ class GameObject : public CCSpritePlus
 	bool m_bMultiActivate;
 	cocos2d::_ccColor3B m_Colour;
 };
+
+#endif // __GAMEOBJECT_H__

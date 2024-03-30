@@ -193,7 +193,7 @@ public:
 	bool areCoinsVerified();
 	bool canEncode();
 	static GJGameLevel* create();
-	static GJGameLevel* create(cocos2d::CCDictionary* dict, bool unkwnbool);
+	static GJGameLevel* create(cocos2d::CCDictionary* dict, bool hasPassword);
 	void copyLevelInfo (GJGameLevel * LevelInfo);
 	void dataLoaded(DS_Dictionary *dsdict);
 	static int demonIconForDifficulty(DemonDifficultyType demonDiff);

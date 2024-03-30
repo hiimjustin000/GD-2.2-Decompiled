@@ -1,7 +1,12 @@
-#pragma once
+#ifndef __INCLUDES_H__
+#define __INCLUDES_H__
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+// External Resources
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+#endif
+#include <fmt/format.h>
 #include <string>
 #include <cstdlib>
 #include <cocos2d.h>
@@ -21,6 +26,7 @@
 #include "LevelSettingsObject.h"
 #include "ObjectToolbox.h"
 #include "GameObject.h"
+#include "LoadingCircle.h"
 #include "EffectGameObject.h"
 #include "CCTextInputNode.h"
 #include "CheckpointObject.h"
@@ -45,6 +51,19 @@
 #include "DelaySection.h"
 #include "LevelPage.h"
 #include "OBB2D.h"
+#include "rtsha1.h"
+#include "GameToolbox.h"
+#include "ShaderLayer.h"
+#include "TextArea.h"
+#include "TextStyleSection.h"
+#include "FontObject.h"
+#include "CCSpritePlus.h"
+#include "FLAlertLayer.h"
+#include "CCMenuSpriteExtra.h"
+#include "InfoAlertButton.h"
+#include "CCMenuItemToggler.h"
+#include "CCMenuSpriteExtra.h"
+
 
 // Layer Related Classes
 
@@ -71,6 +90,8 @@
 #include "Layers/SetGroupIDLayer.h"
 #include "Layers/SetIDLayer.h"
 #include "Layers/UILayer.h"
+#include "Layers/ShareLevelLayer.h"
+#include "Layers/ShaderLayer.h"
 
 // Manager related classes
 
@@ -79,6 +100,9 @@
 #include "Managers/GJAccountManager.h"
 #include "Managers/GJEffectManager.h"
 #include "Managers/GameManager.h"
+#include "Managers/GManager.h"
+#include "Managers/GJMultiplayerManager.h"
+#include "Managers/LocalLevelManager.h"
 
 // Cell related classes
 
@@ -157,4 +181,12 @@ enum GJHttpType
     kGJHttpTypeGetTopArtists = 0x35,
     kGJHttpTypeGetAccountBackupURL = 0x36,
     kGJHttpTypeGetAccountSyncURL = 0x37,
+
+
+    /* I have a feeling this will belong to 59.... */
+    kGJHttpTypeGetGJLevelComments = 0x3b,
+
+    kGJHttpTypeGetGJAccountComments = 0x3c,
 };
+
+#endif // __INCLUDES_H__
