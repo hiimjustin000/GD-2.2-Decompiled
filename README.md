@@ -1,4 +1,7 @@
  English | [Russian](README-RU.md) | [Czech](README-CZ.md) | [Spanish](README-ES.md) | [简体中文](README-CN.md)
+<p>
+<a href="https://discord.gg/GpBrjrebd5"><img src=https://img.shields.io/badge/Discord_Server-3670a0?style=for-the-badge&logo=discord&logoColor=white></a>
+</p>
 
 # GD-Decompiled
  An attempt to get the source code for Geometry Dash through reverse engineering and decompiling the game.  
