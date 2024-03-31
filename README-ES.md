@@ -1,5 +1,7 @@
 [English](README.md) | [Russian](README-RU.md) | [Czech](README-CZ.md) | Spanish | [简体中文](README-CN.md)
-
+<p>
+<a href="https://discord.gg/GpBrjrebd5"><img src=https://img.shields.io/badge/Discord_Server-3670a0?style=for-the-badge&logo=discord&logoColor=white></a>
+</p>
 # GD Decompiled
 
 This translation was made by: @Adrikikicp
