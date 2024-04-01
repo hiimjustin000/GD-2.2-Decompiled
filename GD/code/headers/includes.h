@@ -63,7 +63,7 @@
 #include "InfoAlertButton.h"
 #include "CCMenuItemToggler.h"
 #include "CCMenuSpriteExtra.h"
-
+#include "LevelTools.h"
 
 // Layer Related Classes
 
