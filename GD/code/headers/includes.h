@@ -12,7 +12,7 @@
 #include <cocos2d.h>
 #include "enums.h"
 
-// unorganised
+// unorganised,  TODO: organize
 #include "custom.h"
 #include "GJRewardItem.h"
 #include "GJRewardObject.h"
@@ -64,6 +64,8 @@
 #include "CCMenuItemToggler.h"
 #include "CCMenuSpriteExtra.h"
 #include "LevelTools.h"
+#include "CCCircleWave.h"
+
 
 // Layer Related Classes
 
@@ -181,12 +183,6 @@ enum GJHttpType
     kGJHttpTypeGetTopArtists = 0x35,
     kGJHttpTypeGetAccountBackupURL = 0x36,
     kGJHttpTypeGetAccountSyncURL = 0x37,
-
-
-    /* I have a feeling this will belong to 59.... */
-    kGJHttpTypeGetGJLevelComments = 0x3b,
-
-    kGJHttpTypeGetGJAccountComments = 0x3c,
 };
 
 #endif // __INCLUDES_H__
