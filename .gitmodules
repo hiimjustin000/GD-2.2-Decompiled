@@ -3,4 +3,4 @@
 	url = https://github.com/camila314/gdp
 [submodule "GD/cocos2d/cocos-headers"]
 	path = GD/cocos2d/cocos-headers
-	url = https://github.com/CallocGD/cocos-headers-2.2
+	url = https://github.com/CallocGD/cocos-headers
