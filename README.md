@@ -8,6 +8,8 @@
 I Calloc Have forked this repository for decompling other sources within 2.2 and beyond while wylie is off doing other things (Until he makes a 2.2 repository)
 For now I shall dump what I do have for 2.204 and android v2.205 in here. Feel free to submit pull requests here so I can look at them I would like this to be an official repo for the people of geode to start using temporarly...
 
+## Update 
+2.206 is coming soon so we will make another repository possibly for that version and I might end up redoing everything due to how messy this repo feels to me...
 
 ## Tools Used
 See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-Tools)
