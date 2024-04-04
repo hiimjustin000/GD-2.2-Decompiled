@@ -12,7 +12,7 @@
 #include <cocos2d.h>
 #include "enums.h"
 
-// unorganised,  TODO: organize
+// unorganised,  TODO: Organize this!
 #include "custom.h"
 #include "GJRewardItem.h"
 #include "GJRewardObject.h"
@@ -65,7 +65,8 @@
 #include "CCMenuSpriteExtra.h"
 #include "LevelTools.h"
 #include "CCCircleWave.h"
-
+#include "CCScrollLayerExt.h"
+#include "TableView.h"
 
 // Layer Related Classes
 
@@ -94,6 +95,7 @@
 #include "Layers/UILayer.h"
 #include "Layers/ShareLevelLayer.h"
 #include "Layers/ShaderLayer.h"
+#include "Layers/BoomScrollLayer.h"
 
 // Manager related classes
 
@@ -183,6 +185,6 @@ enum GJHttpType
     kGJHttpTypeGetTopArtists = 0x35,
     kGJHttpTypeGetAccountBackupURL = 0x36,
     kGJHttpTypeGetAccountSyncURL = 0x37,
-};
+};;
 
 #endif // __INCLUDES_H__
