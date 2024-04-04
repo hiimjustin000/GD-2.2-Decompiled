@@ -55,10 +55,8 @@ void FontObject::parseConfigFile(char const* fileName, float _Size){
                 std::string x2(reinterpret_cast<cocos2d::CCString*>(arr2->objectAtIndex(0))->getCString());
                 int size = atoi(x2.substr(x2.find(" ", 0)).data());
 
-                /* not sure what this part is all about... 
-                In Ghidra it reads 
-                *(int *)(&(this->m_textObject).field_0x0 + iVar3 * 4) = iVar5 + iVar4;
-                This is far beyond my understanding...
+                int m_widths[300];
+                m_widths[charcode] = charwidth + xAdvance;
 
                 I will temporary simplify this for now...
                 */
