@@ -58,8 +58,7 @@ void FontObject::parseConfigFile(char const* fileName, float _Size){
                 int m_widths[300];
                 m_widths[charcode] = charwidth + xAdvance;
 
-                I will temporary simplify this for now...
-                */
+                /* I will temporary simplify this for now...*/
                 m_textObject.m_kerning = reinterpret_cast<cocos2d::CCString*>(arr2->objectAtIndex(3))->intValue() + reinterpret_cast<cocos2d::CCString*>(arr2->objectAtIndex(7))->intValue();
             }
         }
