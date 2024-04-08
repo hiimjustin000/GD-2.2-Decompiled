@@ -10,7 +10,7 @@ For now I shall dump what I do have for 2.204 and android v2.205 in here. Feel f
 
 ## Update 
 - 2.206 is coming soon so we will make another repository possibly for that version and I might end up redoing everything due to how messy this repo feels to me...
-- Wylie told me he will be working on this stuff in the future so I will be archiving this repo up when that happens and then start moving everything that I have done to it. 
+- Even Better, Wylie told me he will be working on this stuff in the future so I will be archiving this repo up when that happens and then start moving everything that I have done to it. 
 
 ## Tools Used
 See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-Tools)
