@@ -1,22 +1,26 @@
-#include "../headers/includes.h"
+#include "includes.h"
+
+/* NOTE: not all of this has changed since 2.1 however I am giving this a name change to match up with geode's work... 
+ * Unless Wylie Says otherwise when I go to merge it to his future 2.2 repo... - Calloc */
 
 GJComment::GJComment()
 {
-	m_nCommentID = 0;
-	m_nAuthorPlayerID = 0;
-	m_nLikes = 0;
-	m_nLevelID = 0;
-	m_sComment = "";
-	m_sUsername = "";
-	m_bIsSpam = false;
-	m_nAuthorAccountID = 0;
-	m_sCommentAge = "";
-	m_bCommentDeleted = false;
-	m_nPercentage = 0;
-	m_nModBadge = 0;
-	m_cColor = { 0, 0, 0 };
-	m_bHasLevelID = false;
-	m_pUserScore = nullptr;
+	m_commentID = 0;
+	m_userID = 0;
+	m_likeCount = 0;
+	m_levelID = 0;
+	m_commentString = "";
+	m_userName = "";
+	m_isSpam = false;
+	m_userID = 0;
+	m_uploadDate = "";
+	m_commentDeleted = false;
+	m_percentage = 0;
+	m_modBadge = 0; /* Should've been called an authority - Calloc */
+	/* text Colors by default should be set to white... */
+	m_color = cocos2d::ccWHITE;
+	m_hasLevelID = false;
+	m_userScore = nullptr;
 }
 
 GJComment* GJComment::create()
@@ -33,71 +37,78 @@ GJComment* GJComment::create()
 	return nullptr;
 }
 
-bool init()
+
+bool GJComment::init()
 {
-	m_sComment = "";
-	m_sUsername = "";
+	m_commentString = "";
+	m_uploadDate = "";
 	return true;
 }
 
-int GJComment::getAccountID()
-{
-	return m_nAuthorAccountID;
-}
+// Removed since 2.2 I left this in here to show what has died...
+// int GJComment::getAccountID()
+// {
+// 	return m_accountID;
+// }
 
-int GJComment::getUserID() 
-{
-	return m_nAuthorPlayerID;
-}
+// int GJComment::getUserID() 
+// {
+// 	return m_userID;
+// }
 
-int GJComment::getPercentage()
-{
-	return m_nPercentage;
-}
+// int GJComment::getPercentage()
+// {
+// 	return m_percentage;
+// }
 
-int GJComment::getBadge()
-{
-	return m_nModBadge;
-}
+// int GJComment::getBadge()
+// {
+// 	return m_modBadge;
+// }
 
-cocos2d::ccColor3B GJComment::getColour()
-{
-	return m_cColor;
-}
+// cocos2d::ccColor3B GJComment::getColour()
+// {
+// 	return m_color;
+// }
 
-std::string GJComment::getUsername()
-{
-	return m_sUsername;
-}
+// std::string GJComment::getUsername()
+// {
+// 	return m_userName;
+// }
 
-std::string GJComment::getComment()
-{
-	return m_sComment;
-}
+// std::string GJComment::getComment()
+// {
+// 	return m_commentString;
+// }
 
 GJComment* GJComment::create(cocos2d::CCDictionary* dict)
 {
 	GJComment* comment = create();
-	comment->m_sComment = dict->valueForKey("2")->m_sString;
-	comment->m_nAuthorPlayerID = dict->valueForKey("3")->intValue();
-	comment->m_nLikes = dict->valueForKey("4")->intValue();
-	comment->m_nCommentID = dict->valueForKey("6")->intValue();
-	comment->m_bIsSpam = dict->valueForKey("7")->boolValue();
-	comment->m_nAuthorAccountID = dict->valueForKey("8")->intValue();
-	comment->m_sCommentAge = dict->valueForKey("9")->m_sString;
-	comment->m_nPercentage = dict->valueForKey("10")->intValue();
-	comment->m_nModBadge = dict->valueForKey("11")->intValue();
-	comment->m_nLevelID = dict->valueForKey("1")->intValue();
+	/* One major change was that base64 content is now being decoded here... */
+	comment->m_commentString = LevelTools::base64DecodeString(dict->valueForKey("2")->m_sString);
+	comment->m_userID = dict->valueForKey("3")->intValue();
+	comment->m_likeCount = dict->valueForKey("4")->intValue();
+	comment->m_commentID = dict->valueForKey("6")->intValue();
+	comment->m_isSpam = dict->valueForKey("7")->boolValue();
+	comment->m_accountID = dict->valueForKey("8")->intValue();
+	comment->m_uploadDate = dict->valueForKey("9")->getCString();
+	comment->m_percentage = dict->valueForKey("10")->intValue();
+	comment->m_modBadge = dict->valueForKey("11")->intValue();
+	comment->m_levelID = dict->valueForKey("1")->intValue();
 
-	if (comment->getBadge() > 0)
+	if (comment->m_levelID != 0){
+		comment->m_hasLevelID = true;
+	}
+
+	/* is the user a Mod? */
+	if (comment->m_modBadge > 0)
 	{
 		cocos2d::CCArray* colArr = RobTop::splitToCCArray(dict->valueForKey("12")->m_sString, ",");
-
-		if (colArr.count() > 2)
-		{
-			comment->m_cColor.r = colArr->stringAtIndex(0)->intValue();
-			comment->m_cColor.g = colArr->stringAtIndex(1)->intValue();
-			comment->m_cColor.b = colArr->stringAtIndex(2)->intValue();
+		/* does the user have colored comments? */
+		if (colArr->count() > 2) {
+			comment->m_color.r = colArr->stringAtIndex(0)->intValue();
+			comment->m_color.g = colArr->stringAtIndex(1)->intValue();
+			comment->m_color.b = colArr->stringAtIndex(2)->intValue();
 		}
 	}
 
