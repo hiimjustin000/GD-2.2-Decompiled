@@ -85,7 +85,7 @@ GJComment* GJComment::create(cocos2d::CCDictionary* dict)
 {
 	GJComment* comment = create();
 	/* One major change was that base64 content is now being decoded here... */
-	comment->m_commentString = LevelTools::base64DecodeString(dict->valueForKey("2")->m_sString);
+	comment->m_commentString = LevelTools::base64DecodeString(dict->valueForKey("2")->getCString());
 	comment->m_userID = dict->valueForKey("3")->intValue();
 	comment->m_likeCount = dict->valueForKey("4")->intValue();
 	comment->m_commentID = dict->valueForKey("6")->intValue();
