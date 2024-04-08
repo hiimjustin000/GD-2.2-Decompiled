@@ -2,32 +2,36 @@
 
 class GJComment : public cocos2d::CCNode
 {
-	std::string m_sComment;
-	std::string m_sUsername;
-	int m_nCommentID;
-	int m_nAuthorPlayerID;
-	int m_nLikes;
-	int m_nLevelID;
-	bool m_bIsSpam;
-	int m_nAuthorAccountID;
-	std::string m_sCommentAge;
-	bool m_bCommentDeleted;
-	int m_nPercentage;
-	int m_nModBadge; // 1 for normal, 2 for elder
-	cocos2d::ccColor3B m_cColor;
-	bool m_bHasLevelID;
-	GJUserScore* m_pUserScore;
+public:
+	std::string m_commentString;
+	std::string m_userName;
+	int m_commentID;
+	int m_userID;
+	int m_likeCount;
+	int m_levelID;
+	bool m_isSpam;
+	int m_accountID;
+	std::string m_uploadDate;
+	bool m_commentDeleted;
+	int m_percentage;
+	int m_modBadge;
+	cocos2d::ccColor3B m_color;
+	bool m_hasLevelID;
+	bool m_unkMultiplayerBool;
+	GJUserScore* m_userScore;
 
 	GJComment();
 	static GJComment* create();
 	static GJComment* create(cocos2d::CCDictionary*);
 	virtual bool init();
 
-	int getUserID();
-	int getAccountID();
-	int getPercentage();
-	int getBadge();
-	cocos2d::ccColor3B getColour();
-	std::string getUsername();
-	std::string getComment();
+	// These don't seem to exist anymore this was likely an 
+	// optimization on Robtop's end...
+	// int getUserID();
+	// int getAccountID();
+	// int getPercentage();
+	// int getBadge();
+	// cocos2d::ccColor3B getColour();
+	// std::string getUsername();
+	// std::string getComment();
 };
