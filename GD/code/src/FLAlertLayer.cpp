@@ -161,42 +161,27 @@ void FLAlertLayer::keyDown(cocos2d::enumKeyCodes keycodes){
 }
 
 
-/*
-void __thiscall FLAlertLayer::onBtn1(FLAlertLayer *this,CCObject *param_1)
-
+void FLAlertLayer::onBtn1(CCObject *sender)
 {
-  CCDirector *pCVar1;
-  CCTouchDispatcher *this_00;
-  undefined4 *puVar2;
-  
-  pCVar1 = cocos2d::CCDirector::sharedDirector();
-  this_00 = (CCTouchDispatcher *)(*(code *)pCVar1->vtable->cocos2d_CCDirector_getKeypadDispatcher )()
-  ;
-  cocos2d::CCTouchDispatcher::unregisterForcePrio(this_00,(CCObject *)this);
-  puVar2 = (undefined4 *)this->m_alertProtocol;
-  if (puVar2 != (undefined4 *)0x0) {
-    (**(code **)*puVar2)(puVar2,this,0);
-//   (*(code *)this->vtable->cocos2d_CCNode_removeFromParentAndCleanup)(this,1);
-//   return;
-// }
-*/
-
-
-void FLAlertLayer::onBtn2(cocos2d::CCObject *pSender){
- 
-    FLAlertLayerProtocol *puVar2;
-  
-    auto touchdispatcher = (cocos2d::CCTouchDispatcher*)cocos2d::CCDirector::sharedDirector()->getKeypadDispatcher();
-    /* Another Unidentified Function... */
-    // touchdispatcher->unregisterForcePrio(this);
-    // puVar2 = this->m_alertProtocol;
-    // if (puVar2 != (FLAlertLayerProtocol *)0x0) {
-    //     (***(code ***)puVar2)(puVar2,this,1);
-    // }
-                                    
-    // removeFromParentAndCleanup(1);
-    return;
+    /* TODO: (Calloc) add unregisterForcePrio to cocosheaders in CCTouchDispatcher.h it doesn't exist in hjfod's version */ 
+    cocos2d::CCDirector::sharedDirector()->getTouchDispatcher()->unregisterForcePrio(this);
+    if (m_alertProtocol != nullptr) {
+        m_alertProtocol->FLAlert_Clicked(this, false);
+    }
+    removeFromParentAndCleanup(true);
 }
+
+
+
+void FLAlertLayer::onBtn2(cocos2d::CCObject *sender)
+{
+    cocos2d::CCDirector::sharedDirector()->getTouchDispatcher()->unregisterForcePrio(this);
+    if (m_alertProtocol != nullptr) {
+        m_alertProtocol->FLAlert_Clicked(this, false);
+    }
+    removeFromParentAndCleanup(true);
+}
+
 
 /* FLAlertLayer::onEnter() */
 
