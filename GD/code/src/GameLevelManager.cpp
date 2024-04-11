@@ -5,6 +5,7 @@
 #include <cocos-ext.h>
 #include "GameToolbox.h"
 #include "custom.h"
+#include "rtsha1.h"
 
 
 /* To make things less Confusing and make the code more condensed... */
@@ -93,21 +94,78 @@ void GameLevelManager::cleanupDailyLevels()
 }
 
 
-bool GameLevelManager::createAndGetAccountComments(std::string p0, int p1)
+cocos2d::CCArray * splittoCCArray(std::string str,char *delimiter)
 {
-    return;
+    cocos2d::CCArray *array;
+    size_t pos;
+    size_t npos;
+    size_t start = 0;
+    array = cocos2d::CCArray::create();
+    pos = str.find(delimiter,0);
+    npos = str.size();
+    while( true ) {
+        auto substr = str.substr(start, pos - start);
+        if (substr != "" || start != npos) {
+            array->addObject(cocos2d::CCString::create(substr));
+        }
+        if (pos == 0xffffffff) break;
+        start = pos + 1;
+        pos = str.find(delimiter, start);
+    }
+    return array;
 }
 
 
-bool GameLevelManager::createAndGetCommentsFull(std::string p0, int p1, bool p2)
+cocos2d::CCArray* GameLevelManager::createAndGetAccountComments(std::string commentData, int accountID)
 {
-    return;
+    return createAndGetCommentsFull(commentData, accountID, true);
 }
 
 
-bool GameLevelManager::createAndGetLevelComments(std::string p0, int p1)
+cocos2d::CCArray* GameLevelManager::createAndGetCommentsFull(std::string data, int ID, bool profileComment)
+{   
+    GJComment* comment;
+    GJUserScore* user;
+    cocos2d::CCArray* comments = cocos2d::CCArray::create();
+    cocos2d::CCArray* raw_comments = splittoCCArray(data, "|");
+
+    for (unsigned int i = 0; i < raw_comments->count(); i++) {
+        std::string s = reinterpret_cast<cocos2d::CCString*>(raw_comments->objectAtIndex(i))->getCString();
+        if (profileComment){
+             comment = GJComment::create(responseToDict(s, true));
+            if (comment != nullptr){
+                comment->m_accountID = ID;
+                comments->addObject(comment);
+            }
+        } else {
+            auto UserAndComment = splittoCCArray(s,":");
+            if (UserAndComment->count() > 1){
+                comment = GJComment::create(responseToDict(UserAndComment->stringAtIndex(0)->getCString()));
+                user = GJUserScore::create(responseToDict(UserAndComment->stringAtIndex(1)->getCString()));
+                if (user != nullptr) {
+                    if (comment->m_userScore != user) {
+                        user->retain();
+                        if (comment->m_userScore != nullptr) {
+                            comment->m_userScore->release();
+                        }
+                        comment->m_userScore = user;
+                    }
+                }
+                storeUserName(comment->m_userID,comment->m_accountID, user->m_userName);
+            }
+            if (comment != nullptr){
+                comment->m_levelID = ID;
+                comments->addObject(comment);
+            }
+        }
+    }
+    return comments;
+}
+
+
+cocos2d::CCArray* GameLevelManager::createAndGetLevelComments(std::string commentData, int levelID)
 {
-    return;
+    return createAndGetCommentsFull(commentData, levelID, false);
 }
 
 
@@ -189,11 +247,10 @@ void GameLevelManager::deleteComment(int commentID, CommentType Ctype, int ID)
 }
 
 
-void GameLevelManager::deleteFriendRequests(int p0, cocos2d::CCArray* p1, bool p2)
+unsigned int GameLevelManager::deleteFriendRequests(int targetAccountID, cocos2d::CCArray *selectedFriendRequests, bool isSender)
 {
-    return;
+    
 }
-
 
 void GameLevelManager::deleteLevel(GJGameLevel* p0)
 {
@@ -201,10 +258,11 @@ void GameLevelManager::deleteLevel(GJGameLevel* p0)
 }
 
 
-void GameLevelManager::deleteLevelComment(int p0, int p1)
+void GameLevelManager::deleteLevelComment(int levelID,int commentID)
 {
-    return;
+    deleteComment(commentID, kCommentTypeLevelType, levelID);
 }
+
 
 
 void GameLevelManager::deleteLevelList(GJLevelList* p0)
@@ -213,10 +271,11 @@ void GameLevelManager::deleteLevelList(GJLevelList* p0)
 }
 
 
-void GameLevelManager::deleteSentFriendRequest(int p0)
+void __thiscall GameLevelManager::deleteSentFriendRequest(int sentID)
 {
-    return;
+    deleteFriendRequests(sentID, nullptr, true);
 }
+
 
 
 void GameLevelManager::deleteServerLevel(int levelID)
@@ -309,9 +368,47 @@ void GameLevelManager::downloadUserMessage(int messageID, bool isSender)
 
 
 
-void GameLevelManager::encodeDataTo(DS_Dictionary* p0)
+void GameLevelManager::encodeDataTo(DS_Dictionary* dsdict)
 {
-    return;
+      
+    dsdict->setDictForKey("GLM_01",  m_mainLevels);
+    limitSavedLevels();
+    purgeUnusedLevels();
+    /* Robtop? why run this twice? */
+    updateLevelOrders();
+    updateLevelOrders();
+    dsdict->setDictForKey("GLM_03", m_onlineLevels);
+    cleanupDailyLevels();
+    dsdict->setDictForKey("GLM_10", m_dailyLevels);
+    dsdict->setIntegerForKey("GLM_11", m_weeklyTimeLeft);
+    dsdict->setIntegerForKey("GLM_17", m_eventTimeLeft);
+    dsdict->setDictForKey("GLM_16", m_avalibleFilters);
+    auto array = cocos2d::CCArray::create();
+    // if (m_GLM21 != nullptr) {
+    //     auto key = m_GLM21->key;
+    //     while (key != nullptr) {
+    //         array->addObject();
+    //         key = pbVar1;
+    //         if (pbVar1 != (basic_string *)0x0) {
+    //             pbVar1 = (basic_string *)pbVar1[0x11]._M_length;
+    //         }
+    //     }
+    // }
+    dsdict->setArrayForKey("GLM_22", array);
+    dsdict->setBoolMapForKey("GLM_09", m_GLM9);
+    auto GM = GameManager::sharedState();
+    if (GM->m_new == false) {
+        dsdict->setDictForKey("GLM_07", m_downloadedLevels);
+        dsdict->setDictForKey("GLM_14", m_reportedLevels);
+    }
+    dsdict->setDictForKey("GLM_12", m_likedLevels);
+    dsdict->setDictForKey("GLM_13", m_ratedLevels);
+    dsdict->setDictForKey("GLM_15", m_ratedDemons);
+    dsdict->setDictForKey("GLM_06", m_follwedCreators);
+    dsdict->setDictForKey("GLM_08", m_searchFilters);
+    dsdict->setDictForKey("GLM_18", m_onlineFolders);
+    dsdict->setDictForKey("GLM_19", m_localLevelsFolders);
+    dsdict->setArrayForKey("GLM_20", m_smartTemplates);
 }
 
 
