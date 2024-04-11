@@ -1,63 +1,397 @@
+/* Simple rewrite of the GameLevelManager's code in alphabetical order... */
+
 #include "../headers/includes.h"
+#include "cocos2d/cocos-headers/cocos2dx/support/zip_support/ZipUtils.h"
 #include <cocos-ext.h>
 #include "GameToolbox.h"
 #include "custom.h"
 
-/* In other words this means is the download we have running?
- This is very simillar to that of a thread_lock or mutex - Calloc */
-bool GameLevelManager::isDLActive(const char *DLKey)
+
+/* To make things less Confusing and make the code more condensed... */
+#define Wmfd2893gb7 cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString()
+#define xI25fpAapCQg cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'x',"I25","fpAa",'p','C',"Qg")->getCString()
+
+
+/* Robtop does not like to handle server stuff as far as I have been aware 
+ * thanks to some knowlege of some other people so I wrote this Macro to help 
+ * with formatting some of these http requests off without loosing any of the 
+ * compiled information and keeping this file as condensed as possible without 
+ * losing the Readability of the original code */
+#define FORMAT_HTTP_REQUEST(FORMAT, ...) getBasePostString() + cocos2d::CCString::createWithFormat(FORMAT, __VA_ARGS__)->getCString()
+
+
+void GameLevelManager::acceptFriendRequest(int targetAccountID, int requestID)
 {
-    return m_pDLObject->objectForKey(DLKey);
+    if (0 < targetAccountID && 0 < requestID)
+    {
+        auto key = cocos2d::CCString::createWithFormat("accFriendReq_%i_%i", targetAccountID, requestID)->getCString();
+        m_friendReqAndUserBlocks->setObject(cocos2d::CCNode::create(),key);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/acceptGJFriendRequest20.php", 
+            FORMAT_HTTP_REQUEST("&targetAccountID=%i&requestID=%i&secret=%s", targetAccountID, requestID, Wmfd2893gb7), key, kGJHttpTypeAcceptFriendRequest);
+    }
 }
 
-bool GameLevelManager::isFollowingUser(int ID)
+
+
+int GameLevelManager::accountIDForUserID(int userID)
 {
-    return (bool)m_pFollowedCreators->objectForKey(cocos2d::CCString::createWithFormat("%i", ID)->getCString());
+    return m_accountIDtoUserIDDict->valueForKey(userID)->intValue();
 }
 
-const char *GameLevelManager::getDiffKey(int Diff)
+
+void GameLevelManager::addDLToActive(const char *tag)
 {
-    return cocos2d::CCString::createWithFormat("Diff%i", Diff)->getCString();
+    m_downloadObjects->setObject(cocos2d::CCNode::create(), tag);
 }
 
-/* Discovered by Capeling */
-const char *GameLevelManager::getLevelDownloadKey(int levelID, bool _isGauntlet)
-{
-    return cocos2d::CCString::createWithFormat("%i_%i", levelID, _isGauntlet)->getCString();
-}
-
-/* Discovered by Capeling */
-const char *GameLevelManager::getLevelListKey(int listID)
-{
-    return cocos2d::CCString::createWithFormat("%i", listID)->getCString();
-}
-
-/* Should be the same as the one for the GJAccountManager They maybe even are the same function who knows...
-TODO: (Calloc) Add the Overload Function for addDLToActive...
-*/
-void GameLevelManager::addDLToActive(const char *_tag)
-{
-    cocos2d::CCNode *obj = cocos2d::CCNode::create();
-    m_pDLObject->setObject(obj, _tag);
-}
-
-/* Belive an overload function exists as well... - Calloc */
+/* Beleive an overload function exists as well... - Calloc */
 void GameLevelManager::addDLToActive(cocos2d::CCNode *obj, const char *_tag)
 {
-    m_pDLObject->setObject(obj, _tag);
+    m_downloadObjects->setObject(obj, _tag);
 }
 
-void GameLevelManager::removeDLFromActive(const char *_tag)
+
+
+bool GameLevelManager::areGauntletsLoaded()
 {
-    m_pDLObject->removeObjectForKey(_tag);
+    return m_gauntletLevels->count() > 0;
 }
 
-int GameLevelManager::accountIDForUserID(int accountID)
+
+
+void GameLevelManager::banUser(int p0)
 {
-    return m_pAccountIDDict->valueForKey(accountID)->intValue();
+    return;
 }
 
-/* TODO: (Calloc) Complete this function */
+
+void GameLevelManager::blockUser(int accountID)
+{
+    if (accountID > 0)
+    {
+        /* If the user is now blocked in our blacklist do this...*/
+        auto blockedUserKey = cocos2d::CCString::createWithFormat("blockUser_%i", accountID)->getCString();
+        if (m_friendReqAndUserBlocks->objectForKey(blockedUserKey) == nullptr)
+        {
+            /* Set the user as being blocked... */
+            m_friendReqAndUserBlocks->setObject(cocos2d::CCNode::create(), blockedUserKey);
+            ProcessHttpRequest(
+                "https://www.boomlings.com/database/blockGJUser20.php", 
+                FORMAT_HTTP_REQUEST("&targetAccountID=%i&secret=%s", accountID, Wmfd2893gb7) , 
+                blockedUserKey, 
+                kGJHttpTypeBlockUser
+            );
+        }
+    }
+}
+
+
+void GameLevelManager::cleanupDailyLevels()
+{
+    return;
+}
+
+
+bool GameLevelManager::createAndGetAccountComments(std::string p0, int p1)
+{
+    return;
+}
+
+
+bool GameLevelManager::createAndGetCommentsFull(std::string p0, int p1, bool p2)
+{
+    return;
+}
+
+
+bool GameLevelManager::createAndGetLevelComments(std::string p0, int p1)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::createAndGetLevelLists(std::string p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::createAndGetLevels(std::string p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::createAndGetMapPacks(std::string p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::createAndGetScores(std::string p0, GJScoreType p1)
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::createNewLevel()
+{
+    return;
+}
+
+
+GJLevelList* GameLevelManager::createNewLevelList()
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::createPageInfo(int p0, int p1, int p2){}; */
+
+GJSmartTemplate* GameLevelManager::createSmartTemplate()
+{
+    return;
+}
+
+
+void GameLevelManager::dataLoaded(DS_Dictionary* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteAccountComment(int ID, int commentID)
+{
+    return deleteComment(commentID, kCommentTypeAccountType, ID);
+}
+
+
+void GameLevelManager::deleteComment(int commentID, CommentType Ctype, int ID)
+{
+    const char *key = getDeleteCommentKey(ID, commentID, Ctype);
+    
+    if (m_friendReqAndUserBlocks->objectForKey(key) == NULL)
+    {
+        m_friendReqAndUserBlocks->setObject(cocos2d::CCNode::create(), key);
+        std::string postStr = FORMAT_HTTP_REQUEST("&commentID=%i&secret=%s", commentID, Wmfd2893gb7);
+        if (Ctype == kCommentTypeLevelType) {
+            postStr += "&levelID=";
+        } else {
+            postStr += "&cType=";
+            postStr += cocos2d::CCString::createWithFormat("%i", Ctype)->getCString();
+            postStr += "&targetAccountID=";
+        }
+        postStr += cocos2d::CCString::createWithFormat("%i", ID)->getCString();
+        ProcessHttpRequest((Ctype) ?"https://www.boomlings.com/database/deleteGJComment20.php" : "https://www.boomlings.com/database/deleteGJAccComment20.php", postStr, key, kGJHttpTypeDeleteComment);
+    }
+}
+
+
+void GameLevelManager::deleteFriendRequests(int p0, cocos2d::CCArray* p1, bool p2)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteLevel(GJGameLevel* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteLevelComment(int p0, int p1)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteLevelList(GJLevelList* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteSentFriendRequest(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteServerLevel(int levelID)
+{
+    const char *key = getLevelKey(levelID);
+    if (m_friendReqAndUserBlocks->objectForKey(key) == nullptr)
+    {
+        std::string postStr = getBasePostString();
+        m_friendReqAndUserBlocks->setObject(cocos2d::CCNode::create(), key);
+        postStr += cocos2d::CCString::createWithFormat("&levelID=%i&secret=%s", levelID, Wmfd2893gb7)->getCString();
+        ProcessHttpRequest("https://www.boomlings.com/database/deleteGJLevelUser20.php", postStr, key, kGJHttpTypeDeleteServerLevel);
+    }
+}
+
+
+void GameLevelManager::deleteServerLevelList(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteSmartTemplate(GJSmartTemplate* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::deleteUserMessages(GJUserMessage* message, cocos2d::CCArray* messages, bool isSender)
+{
+    return;
+}
+
+/* Robtop? Why did you repeat the Same Function from GameToolbox over here? it makes no sense :/ */
+
+std::string gen_random(int size){
+    std::string rs = "";
+    for (int i = 0; i < size; i++) 
+        rs += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rand() % 0x3e];
+    return rs;
+}
+
+void GameLevelManager::downloadLevel(int levelID, bool _isGaunlet)
+{
+    const char *key = getLevelDownloadKey(levelID, _isGaunlet);
+    if (!isDLActive(key))
+    {   
+        int inc = hasDownloadedLevel(levelID);
+        addDLToActive(key);
+        std::string postStr = FORMAT_HTTP_REQUEST("&levelID=%i&inc=%i&secret=%s", levelID, inc, Wmfd2893gb7);
+        if (inc){
+            auto rs = gen_random(10);
+            postStr += "&rs="; postStr += rs;
+            auto AM = GJAccountManager::sharedState();
+            auto GM = GameManager::sharedState();
+            /* I would think this is it?... */
+            auto pre_chk = cocos2d::CCString::createWithFormat(
+                "%i%i%s%i%s%i%s", levelID, inc, 
+                rs.c_str() , 
+                AM->m_accountID - AM->m_unkInt1,
+                GM->m_playerUserID_Random - GM->m_playerUserID_Seed, 
+                xI25fpAapCQg
+            )->getCString();
+
+            unsigned char hash[41];
+            char chk[21];
+            rtsha1::calc(pre_chk, strlen(pre_chk), hash);
+            rtsha1::toHexString(hash, chk);
+            postData += "&chk=";
+            postData += cocos2d::ZipUtils::base64EncodeEnc(key, chk, "41274");
+        }
+        ProcessHttpRequest("https://www.boomlings.com/database/downloadGJLevel22.php", postData, key, kGJHttpTypeDownloadLevel);
+    }
+}
+
+
+void GameLevelManager::downloadUserMessage(int messageID, bool isSender)
+{
+    const char *key = getMessageKey(isSender, messageID);
+    if (!isDLActive(key))
+    {
+        addDLToActive(key);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/downloadGJMessage20.php", 
+            FORMAT_HTTP_REQUEST("&messageID=%i&secret=%s", messageID, Wmfd2893gb7), 
+            key, 
+            kGJHttpTypeDownloadUserMessage
+        );
+    }
+}
+
+
+
+void GameLevelManager::encodeDataTo(DS_Dictionary* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::firstSetup()
+{
+    return;
+}
+
+
+void GameLevelManager::followUser(int ID)
+{
+    return m_followedCreators->setObject(cocos2d::CCString::create("1"), cocos2d::CCString::createWithFormat("%i", ID)->getCString());
+}
+
+
+GJFriendRequest* GameLevelManager::friendRequestFromAccountID(int accountID)
+{
+    return m_friendRequests->objectForKey(accountID);
+}
+
+
+void GameLevelManager::friendRequestWasRemoved(int p0, bool p1)
+{
+    return;
+}
+
+
+const char *GameLevelManager::getAccountCommentKey(int accountID, int page)
+{
+    return cocos2d::CCString::createWithFormat("a_%i_%i", accountID, page)->getCString();
+}
+
+
+void GameLevelManager::getAccountComments(int accountID, int page, int total)
+{
+    const char *key = getAccountCommentKey(accountID, page);
+    if (!isDLActive(key))
+    {
+        addDLToActive(key);
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJAccountComments20.php", getBasePostString() + cocos2d::CCString::createWithFormat("&accountID=%i&page=%i&total=%i&secret=%s", accountID, page, total, Wmfd2893gb7)->getCString(), key, kGJHttpTypeGetAccountComments);
+    }
+}
+
+
+int GameLevelManager::getActiveDailyID(GJTimedLevelType p0)
+{
+    return;
+}
+
+
+std::string GameLevelManager::getActiveDailyID(bool p0, bool p1, bool p2, bool p3, bool p4, bool p5, bool p6, bool p7)
+{
+    return;
+}
+
+
+GJSmartTemplate* GameLevelManager::getActiveSmartTemplate()
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::getAllSmartTemplates()
+{
+    return;
+}
+
+
+cocos2d::CCDictionary* GameLevelManager::getAllUsedSongIDs()
+{
+    return;
+}
+
+
+GJLevelList* GameLevelManager::getAllUsedSongIDs(int p0)
+{
+    return;
+}
+
+
 std::string GameLevelManager::getBasePostString()
 {
     auto GM = GameManager::sharedState();
@@ -75,32 +409,226 @@ std::string GameLevelManager::getBasePostString()
     return BasePostString;
 }
 
-const char *GameLevelManager::getCommentKey(int ID, int page, int mode, CommentKeyType keytype)
-{
-    /* IT Honstesly should be only one line which is very surprising...*/
-    return cocos2d::CCString::createWithFormat("comment_%i_%i_%i_%i", page, mode, keytype, ID)->getCString();
-};
 
-const char *GameLevelManager::getLevelKey(int levelID)
+bool GameLevelManager::getBoolForKey(char const* p0)
 {
-    return cocos2d::CCString::createWithFormat("%i", levelID)->getCString();
-};
-
-int GameLevelManager::accountIDForUserID(int accountID)
-{
-    return m_pAccountIDDict->valueForKey(accountID)->intValue();
+    return;
 }
 
-void GameLevelManager::cleanupDailyLevels()
+
+std::string GameLevelManager::getCommentKey(int ID, int page, int mode, CommentKeyType keytype)
 {
-    auto dailylevelkeys = m_pDailyLevels->allKeys();
-    if (dailylevelkeys->count())
-    {
-        m_pDailyLevels->objectForKey(reinterpret_cast<cocos2d::CCString *> dailylevelkeys->objectAtIndex(dailylevelkeys->count() - 1)->getCString());
+    return cocos2d::CCString::createWithFormat("comment_%i_%i_%i_%i", page, mode, keytype, ID)->getCString();
+}
+
+
+
+/* Unknown Return: GameLevelManager::getCompletedDailyLevels(){}; */
+
+
+/* Unknown Return: GameLevelManager::getCompletedGauntletDemons(){}; */
+
+
+/* Unknown Return: GameLevelManager::getCompletedGauntletLevels(){}; */
+
+cocos2d::CCArray* GameLevelManager::getCompletedLevels(bool p0)
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::getCompletedWeeklyLevels(){}; */
+
+int GameLevelManager::getDailyID(GJTimedLevelType timedleveltype)
+{
+    switch(timedleveltype){
+        case kGJTimedLevelTypeWeekly: return m_weeklyID;
+        case kGJTimedLevelTypeEvent: return m_eventID;
+        default: return m_dailyID;
     }
 }
 
-/* TODO: Fix code as needed in the future... */
+
+int GameLevelManager::getDailyTimer(GJTimedLevelType timedleveltype)
+{
+    switch(timedleveltype){
+        case kGJTimedLevelTypeWeekly: return m_weeklyTimeLeft;
+        case kGJTimedLevelTypeEvent: return m_eventTimeLeft;
+        default: return m_dailyTimeLeft;
+    }
+}
+
+
+char const*GameLevelManager::getDeleteCommentKey(int levelID, int commentID, int Ctype)
+{
+    return cocos2d::CCString::createWithFormat("delcomment_%i_%i_%i", levelID, commentID, Ctype)->getCString();
+}
+
+
+char const* GameLevelManager::getDeleteMessageKey(int p0, bool p1)
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::getDemonLevelsString(){}; */
+
+char const* GameLevelManager::getDescKey(int p0)
+{
+    return;
+}
+
+
+const char *GameLevelManager::getDiffKey(int Diff)
+{
+    return cocos2d::CCString::createWithFormat("Diff%i", Diff)->getCString();
+}
+
+bool GameLevelManager::getDiffVal(int p0)
+{
+    return;
+}
+
+
+std::string GameLevelManager::getFolderName(int p0, bool p1)
+{
+    return;
+}
+
+
+
+const char *GameLevelManager::getFriendRequestKey(bool sent, int page)
+{
+    return cocos2d::CCString::createWithFormat("fReq_%i_%i", (int)sent, page)->getCString();
+}
+
+
+void GameLevelManager::getFriendRequests(bool sent, int page, int total)
+{
+    const char *key = getFriendRequestKey(sent, page);
+    if (!isDLActive(key))
+    {
+        addDLToActive(key);
+        std::string poststr = FORMAT_HTTP_REQUEST("&page=%i&total=%i&secret=%s", page, total, Wmfd2893gb7);
+        if (sent)
+            poststr += "&getSent=1";
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJFriendRequests20.php", poststr, key, kGJHttpTypeGetFriendRequests);
+    }
+}
+
+
+void GameLevelManager::getGJChallenges()
+{
+    return;
+}
+
+
+void GameLevelManager::getGJDailyLevelState(GJTimedLevelType levelType)
+{
+    const char *key;
+    switch(levelType){
+        case kGJTimedLevelTypeWeekly: { 
+            key = "\xde";
+            break;
+        }
+        case kGJTimedLevelTypeEvent: {
+            key = "\xeb";
+            break;
+        }
+        default: {
+            key = "\xcc";
+            break;
+        }
+    }
+    if (!isDLActive(key))
+    {
+        addDLToActive(key);
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJDailyLevel.php", FORMAT_HTTP_REQUEST("&secret=%s&type=%i", Wmfd2893gb7, levelType), key, kGJHttpTypeGetGJDailyLevelState);
+    }
+}
+
+
+void GameLevelManager::getGJRewards(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::getGJUserInfo(int targetAccountID)
+{
+    const char *key = getUserInfoKey(targetAccountID);
+    if (!isDLActive(key))
+    {
+        addDLToActive(key);
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJUserInfo20.php", FORMAT_HTTP_REQUEST("&targetAccountID=%i&secret=%s", targetAccountID, Wmfd2893gb7), key, kGJHttpTypeGetGJUserInfo);
+    }
+}
+
+const char *GameLevelManager::getGauntletKey(int key)
+{
+    return cocos2d::CCString::createWithFormat("%i", key)->getCString();
+}
+
+
+void GameLevelManager::getGauntletLevels(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::getGauntlets()
+{
+    if (!isDLActive("get_gauntlets"))
+    {
+        addDLToActive("get_gauntlets");
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJGauntlets21.php", FORMAT_HTTP_REQUEST("&secret=%s&special=1", Wmfd2893gb7), "get_gauntlets", kGJHttpTypeGetGauntlets);
+    }
+}
+
+
+const char *GameLevelManager::getGauntletsearchKey(int searchKey)
+{
+    return cocos2d::CCString::createWithFormat("gaunlet_%i", searchKey)->getCString();
+}
+
+
+int GameLevelManager::getHighestLevelOrder()
+{
+    return;
+}
+
+
+int GameLevelManager::getIntForKey(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::getLeaderboardScores(char const* p0)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getLenKey(int len)
+{
+    return cocos2d::CCString::createWithFormat("Len%i", len)->getCString();
+}
+
+
+bool GameLevelManager::getLenVal(int p0)
+{
+    return;
+}
+
+
+std::string GameLevelManager::getLengthStr(bool p0, bool p1, bool p2, bool p3, bool p4, bool p5)
+{
+    return;
+}
+
 
 void GameLevelManager::getLevelComments(int ID, int page, int total, int mode, CommentKeyType keytype)
 {
@@ -132,181 +660,275 @@ void GameLevelManager::getLevelComments(int ID, int page, int total, int mode, C
     }
 }
 
-const char *GameLevelManager::getAccountCommentKey(int accountID, int page)
+/* Discovered by Capeling */
+const char *GameLevelManager::getLevelDownloadKey(int levelID, bool _isGauntlet)
 {
-    return cocos2d::CCString::createWithFormat("a_%i_%i", accountID, page)->getCString();
+    return cocos2d::CCString::createWithFormat("%i_%i", levelID, _isGauntlet)->getCString();
 }
 
-/* This is the comments made on the user's profile... */
-void GameLevelManager::getAccountComments(int accountID, int page, int total)
+char const* GameLevelManager::getLevelKey(int levelID)
 {
-    const char *key = getAccountCommentKey(accountID, page);
-    if (!isDLActive(key))
+    return;
+}
+
+void GameLevelManager::getLevelLeaderboard(GJGameLevel* p0, LevelLeaderboardType p1, LevelLeaderboardMode p2)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getLevelLeaderboardKey(int p0, LevelLeaderboardType p1, LevelLeaderboardMode p2)
+{
+    return;
+}
+
+
+/* Discovered by Capeling */
+const char *GameLevelManager::getLevelListKey(int listID)
+{
+    return cocos2d::CCString::createWithFormat("%i", listID)->getCString();
+}
+
+
+void GameLevelManager::getLevelLists(GJSearchObject *searchObject)
+{
+    const char *dl_key = searchObject->getKey();
+    if (isDLActive(dl_key))
     {
-        addDLToActive(key);
-        std::string poststr = getBasePostString();
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        poststr += cocos2d::CCString::createWithFormat("&accountID=%i&page=%i&total=%i&secret=%s", accountID, page, total, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJAccountComments20.php", poststr, key, kGJHttpTypeGetAccountComments);
+        addDLToActive(dl_key);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/getGJLevelLists.php",
+            FORMAT_HTTP_REQUEST("&str=%s&type=%i&page=%i&secret=%s", searchObject->m_searchQuery, searchObject->m_searchType, searchObject->m_page, Wmfd2893gb7), 
+            dl_key, 
+            0x3c /* <- TODO */
+        );
     }
 }
 
-const char *GameLevelManager::getFriendRequestKey(bool sent, int page)
-{
-    return cocos2d::CCString::createWithFormat("fReq_%i_%i", (int)sent, page)->getCString();
-}
-
-void GameLevelManager::getFriendRequests(bool sent, int page, int total)
-{
-    const char *key = getFriendRequestKey(sent, page);
-    if (!isDLActive())
-    {
-        addDLToActive(key);
-        std::string poststr = getBasePostString();
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        poststr += cocos2d::CCString::createWithFormat("&page=%i&total=%i&secret=%s", page, total, secret)->getCString();
-        if (sent)
-            poststr += "&getSent=1";
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJFriendRequests20.php", poststr, key, kGJHttpTypeGetFriendRequests);
-    }
-}
-
-bool GameLevelManager::areGauntletsLoaded()
-{
-    return m_pGauntletLevels->count() > 0;
-}
-
-const char *GameLevelManager::getGauntletKey(int key)
-{
-    return cocos2d::CCString::createWithFormat("%i", key)->getCString();
-}
-
-const char *GameLevelManager::getGauntletSearchKey(int searchKey)
-{
-    return cocos2d::CCString::createWithFormat("gaunlet_%i", searchKey)->getCString();
-}
-
-void GameLevelManager::getGauntlets()
-{
-    if (!isDLActive("get_gauntlets"))
-    {
-        addDLToActive("get_gauntlets");
-        std::string poststr = getBasePostString();
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        poststr += cocos2d::CCString::createWithFormat("&secret=%s&special=1", secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJGauntlets21.php", poststr, "get_gauntlets", kGJHttpTypeGetGauntlets);
-    }
-}
-
-/* TODO (Calloc) Change levelType to an enum when it's
-been figured out, I will let wyliemaster be in charge
-of figuring that stuff out...*/
-void GameLevelManager::getGJDailyLevelState(int levelType)
-{
-    const char *key;
-    if (levelType == 1)
-    {
-        key = "\xde";
-    }
-    else if (levelType == 2)
-    {
-        key = "\xeb";
-    }
-    else
-    {
-        key = "\xcc";
-    }
-    if (!isDLActive(key))
-    {
-        addDLToActive(key);
-        std::string poststr = getBasePostString();
-        const char *secert = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        poststr += cocos2d::CCString::createWithFormat("&secret=%s&type=%i", secret, levelType);
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJDailyLevel.php", poststr, key, kGJHttpTypeGetGJDailyLevelState);
-    }
-}
-
-const char *GameLevelManager::getUserInfoKey(int targetAccountID)
-{
-    return cocos2d::CCString::createWithFormat("account_%i", targetAccountID)->getCString();
-}
-
-void GameLevelManager::getGJUserInfo(int targetAccountID)
-{
-    const char *key = getUserInfoKey(targetAccountID);
-    if (!isDLActive(key))
-    {
-        addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&targetAccountID=%i&secret=%s", targetAccountID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJUserInfo20.php", postStr, key, kGJHttpTypeGetGJUserInfo);
-    }
-}
-
-const char *GameLevelManager::getLenKey(int Len)
-{
-    return cocos2d::CCString::createWithFormat("Len%i", len)->getCString();
-};
 
 void GameLevelManager::getLevelSaveData()
 {
     if (!isDLActive("lvl_data"))
     {
         addDLToActive("lvl_data");
-        std::string postStr = getBasePostString();
-        postStr += "&secret=";
-        postStr += cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getSaveData.php", postStr, "lvl_data", kGJHttpTypeGetLevelSaveData);
+        ProcessHttpRequest("https://www.boomlings.com/database/getSaveData.php", getBasePostString() + "&secret=" + Wmfd2893gb7, "lvl_data", kGJHttpTypeGetLevelSaveData);
     }
 }
 
-const char *GameLevelManager::getMapPackKey(int pack)
+
+char const* GameLevelManager::getLikeAccountItemKey(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getLikeItemKey(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::getLocalLevel(int p0)
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::getLocalLevelByName(std::string p0)
+{
+    return;
+}
+
+
+int GameLevelManager::getLowestLevelOrder()
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::getMainLevel(int p0, bool p1)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getMapPackKey(int pack)
 {
     return cocos2d::CCString::createWithFormat("pack_%i", pack)->getCString();
 }
 
-bool GameLevelManager::hasDownloadedLevel(int levelID)
+
+void GameLevelManager::getMapPacks(GJSearchObject* p0)
 {
-    return (bool)m_pDownloadedLevels->objectForKey(getLevelKey(levelID));
+    return;
 }
 
-const char *GameLevelManager::getPostCommentsKey(int seconds_left)
+
+char const* GameLevelManager::getMessageKey(int p0)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getMessagesKey(bool p0, int p1)
+{
+    return;
+}
+
+
+void GameLevelManager::getNews()
+{
+    return;
+}
+
+
+int GameLevelManager::getNextFreeTemplateID()
+{
+    return;
+}
+
+
+std::string GameLevelManager::getNextLevelName(std::string p0)
+{
+    return;
+}
+
+
+void GameLevelManager::getOnlineLevels(GJSearchObject* p0)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getPageInfo(char const* p0)
+{
+    return;
+}
+
+
+char const* GameLevelManager::getPostCommentKey(int seconds_left)
 {
     return cocos2d::CCString::createWithFormat("c_%i", seconds_left)->getCString();
 }
+
 
 const char *GameLevelManager::getRateStarsKey(int key)
 {
     return cocos2d::CCString::createWithFormat("%i", key)->getCString();
 }
 
+
 const char *GameLevelManager::getReportKey(int levelID)
 {
     return cocos2d::CCString::createWithFormat("%i", levelID)->getCString();
 }
 
-bool GameLevelManager::hasReportedLevel(int levelID)
+
+
+GJGameLevel* GameLevelManager::getSavedDailyLevel(int p0)
 {
-    return (bool)m_pReportedLevels->objectForKey(getReportKey(levelID));
+    return;
 }
 
-void GameLevelManager::reportLevel(int levelID)
+
+GJGameLevel* GameLevelManager::getSavedDailyLevelFromLevelID(int p0)
 {
-    if (!hasReportedLevel(levelID))
-    {
-        markLevelAsReported(levelID);
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        std::string postStr = cocos2d::CCString::createWithFormat("levelID=%i&secret=%s", levelID, secret)->getCString();
-        const char *key = cocos2d::CCString::createWithFormat("%i", levelID)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/reportGJLevel.php", postStr, key, kGJHttpTypeReportLevel);
-    }
+    return;
 }
 
-const char *GameLevelManager::getTopArtistsKey(int accountIDForUserID(int accountID))
+
+GJGameLevel* GameLevelManager::getSavedGauntlet(int p0)
 {
-    return cocos2d::CCString::createWithFormat("topArtists_%i", page)->getCString();
+    return;
 }
+
+
+GJGameLevel* GameLevelManager::getSavedGauntletLevel(int p0)
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::getSavedLevel(GJGameLevel* p0)
+{
+    return;
+}
+
+
+GJGameLevel* GameLevelManager::getSavedLevel(int p0)
+{
+    return;
+}
+
+
+GJLevelList* GameLevelManager::getSavedLevelList(int p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::getSavedLevelLists(int p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::getSavedLevels(bool p0, int p1)
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::getSavedMapPack(int p0){}; */
+
+cocos2d::CCScene* GameLevelManager::getSearchScene(char const* p0)
+{
+    return;
+}
+
+
+int GameLevelManager::getSplitIntFromKey(char const* p0, int p1)
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::getStarLevelsString(){}; */
+
+
+/* Unknown Return: GameLevelManager::getStoredLevelComments(char const* p0){}; */
+
+cocos2d::CCArray* GameLevelManager::getStoredOnlineLevels(char const* p0)
+{
+    return;
+}
+
+
+cocos2d::CCArray* GameLevelManager::getStoredUserList(UserListType p0)
+{
+    return;
+}
+
+
+GJUserMessage* GameLevelManager::getStoredUserMessage(int p0)
+{
+    return;
+}
+
+
+GJUserMessage* GameLevelManager::getStoredUserMessageReply(int p0)
+{
+    return;
+}
+
+
+double GameLevelManager::getTimeLeft(char const* p0, float p1)
+{
+    return;
+}
+
 
 void GameLevelManager::getTopArtists(int page, int total)
 {
@@ -314,37 +936,40 @@ void GameLevelManager::getTopArtists(int page, int total)
     if (!isDLActive(key))
     {
         addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&page=%i&secret=%s&total=%i", page, secret, total)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJTopArtists.php", postStr, key, kGJHttpTypeGetTopArtists);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/getGJTopArtists.php", 
+            FORMAT_HTTP_REQUEST("&page=%i&secret=%s&total=%i", page, Wmfd2893gb7, total), 
+            key, 
+            kGJHttpTypeGetTopArtists
+        );
     }
 };
 
+const char *GameLevelManager::getTopArtistsKey(int page)
+{
+    return cocos2d::CCString::createWithFormat("topArtists_%i", page)->getCString();
+}
+
+char const* GameLevelManager::getUploadMessageKey(int p0)
+{
+    return;
+}
+
+
+const char *GameLevelManager::getUserInfoKey(int targetAccountID)
+{
+    return cocos2d::CCString::createWithFormat("account_%i", targetAccountID)->getCString();
+}
+
+
 void GameLevelManager::getUserList(UserListType listType)
 {
-    const char *key;
-    if (listType == kUserListTypeGetFriends)
-    {
-        key = "get_friends";
-    }
-    else
-    {
-        key = "get_blocked";
-    }
+    const char *key = (listType == kUserListTypeGetFriends) ? "get_friends" : "get_blocked";
     if (!isDLActive(key))
     {
         addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&type=%i&secret=%s", listType, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJUserList20.php", postStr, key, kGJHttpTypeGetUserList);
+        ProcessHttpRequest("https://www.boomlings.com/database/getGJUserList20.php", FORMAT_HTTP_REQUEST("&type=%i&secret=%s", listType, Wmfd2893gb7), key, kGJHttpTypeGetUserList);
     }
-}
-
-const char *GameLevelManager::getMessagesKey(bool getSent, int page)
-{
-    return cocos2d::CCString::createWithFormat("messages_%i_%i", (int)getSent, page)->getCString();
 }
 
 void GameLevelManager::getUserMessages(bool getSent, int page, int total)
@@ -353,14 +978,17 @@ void GameLevelManager::getUserMessages(bool getSent, int page, int total)
     if (!isDLActive(key))
     {
         addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&page=%i&total=%i&secret=%s", page, total, secret)->getCString();
-        if (getSent)
-            postStr += "&getSent=1";
+        std::string postStr = FORMAT_HTTP_REQUEST("&page=%i&total=%i&secret=%s", page, total, Wmfd2893gb7); 
+        postStr += (getSent) ? "&getSent=1": "";
         ProcessHttpRequest("https://www.boomlings.com/database/getGJMessages20.php", postStr, key, kGJHttpTypeGetUserMessages);
     }
 }
+
+const char *GameLevelManager::getMessagesKey(bool getSent, int page)
+{
+    return cocos2d::CCString::createWithFormat("messages_%i_%i", (int)getSent, page)->getCString();
+}
+
 
 void GameLevelManager::getUsers(GJSearchObject *searchObject)
 {
@@ -368,51 +996,564 @@ void GameLevelManager::getUsers(GJSearchObject *searchObject)
     if (!isDLActive(key))
     {
         addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&str=%s&total=%i&page=%i&secret=%s", searchObject->m_searchQuery, searchObject->m_total, searchObject->m_page, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJUsers20.php", postStr, key, kGJHttpTypeGetUsers);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/getGJUsers20.php", 
+            FORMAT_HTTP_REQUEST("&str=%s&total=%i&page=%i&secret=%s", searchObject->m_searchQuery, searchObject->m_total, searchObject->m_page, Wmfd2893gb7), 
+            key, 
+            kGJHttpTypeGetUsers
+        );
     }
 }
 
-const char *GameLevelManager::getMessageKey(bool param_1, int param_2)
+
+void GameLevelManager::gotoLevelPage(GJGameLevel* p0)
 {
-    return cocos2d::CCString::createWithFormat("messages_%i_%i", param_1, param_2)->getCString();
+    return;
 }
 
-void GameLevelManager::blockUser(int accountID)
+
+void GameLevelManager::handleIt(bool p0, std::string p1, std::string p2, GJHttpType p3)
 {
-    if (0 < accountID)
+    return;
+}
+
+
+void GameLevelManager::handleItDelayed(bool p0, std::string p1, std::string p2, GJHttpType p3)
+{
+    return;
+}
+
+
+void GameLevelManager::handleItND(cocos2d::CCNode* p0, void* p1)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasDailyStateBeenLoaded(GJTimedLevelType p0)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasDownloadedLevel(int levelID)
+{
+    return (bool)m_downloadedLevels->objectForKey(getLevelKey(levelID));
+}
+
+
+bool GameLevelManager::hasDownloadedList(int p0)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasLikedAccountItem(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasLikedItem(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasLikedItemFullCheck(LikeItemType p0, int p1, int p2)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasRatedDemon(int p0)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasRatedLevelStars(int p0)
+{
+    return;
+}
+
+
+bool GameLevelManager::hasReportedLevel(int levelID)
+{
+    return (bool)m_reportedLevels->objectForKey(getReportKey(levelID));
+}
+
+
+bool GameLevelManager::init()
+{
+    return;
+}
+
+
+void GameLevelManager::invalidateMessages(bool p0, bool p1)
+{
+    return;
+}
+
+
+void GameLevelManager::invalidateRequests(bool p0, bool p1)
+{
+    return;
+}
+
+
+void GameLevelManager::invalidateUserList(UserListType p0, bool p1)
+{
+    return;
+}
+
+
+bool GameLevelManager::isDLActive(const char *tag)
+{
+    return m_downloadObjects->objectForKey(tag);
+}
+
+
+bool GameLevelManager::isFollowingUser(int ID)
+{
+    return (bool)m_followedCreators->objectForKey(cocos2d::CCString::createWithFormat("%i", ID)->getCString());
+}
+
+
+bool GameLevelManager::isTimeValid(char const* p0, float p1)
+{
+    return;
+}
+
+
+bool GameLevelManager::isUpdateValid(int p0)
+{
+    return;
+}
+
+
+int GameLevelManager::itemIDFromLikeKey(char const* p0)
+{
+    return;
+}
+
+
+bool GameLevelManager::keyHasTimer(char const* p0)
+{
+    return;
+}
+
+
+int GameLevelManager::levelIDFromCommentKey(char const* p0)
+{
+    return;
+}
+
+
+int GameLevelManager::levelIDFromPostCommentKey(char const* p0)
+{
+    return;
+}
+
+
+int GameLevelManager::likeFromLikeKey(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::likeItem(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+void GameLevelManager::limitSavedLevels()
+{
+    return;
+}
+
+
+void GameLevelManager::makeTimeStamp(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::markItemAsLiked(LikeItemType p0, int p1, bool p2, int p3)
+{
+    return;
+}
+
+
+void GameLevelManager::markLevelAsDownloaded(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::markLevelAsRatedDemon(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::markLevelAsRatedStars(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::markLevelAsReported(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::messageWasRemoved(int p0, bool p1)
+{
+    return;
+}
+
+
+void GameLevelManager::onAcceptFriendRequestCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onBanUserCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onBlockUserCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDeleteCommentCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDeleteFriendRequestCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDeleteServerLevelCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDeleteServerLevelListCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDeleteUserMessagesCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDownloadLevelCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onDownloadUserMessageCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetAccountCommentsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetFriendRequestsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetGJChallengesCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetGJDailyLevelStateCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetGJRewardsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetGJUserInfoCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetGauntletsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetLeaderboardScoresCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetLevelCommentsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetLevelLeaderboardCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetLevelListsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetLevelSaveDataCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetMapPacksCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetNewsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetOnlineLevelsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetTopArtistsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetUserListCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetUserMessagesCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onGetUsersCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onLikeItemCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onProcessHttpRequestCompleted(cocos2d::extension::CCHttpClient *client, cocos2d::extension::CCHttpResponse *response)
+{
+    return handleIt(true,  GameToolbox::getResponse(response), response->getHttpRequest()->getTag(), (GJHttpType)response->getHttpRequest()->get_requestTypeGJ());
+}
+
+
+
+void GameLevelManager::onRateDemonCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onRateStarsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onReadFriendRequestCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onRemoveFriendCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onReportLevelCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onRequestUserAccessCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onRestoreItemsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onSetLevelFeaturedCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onSetLevelStarsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onSubmitUserInfoCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onSuggestLevelStarsCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUnblockUserCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUpdateDescriptionCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUpdateLevelCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUpdateUserScoreCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUploadCommentCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUploadFriendRequestCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUploadLevelCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUploadLevelListCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+void GameLevelManager::onUploadUserMessageCompleted(std::string response, std::string tag)
+{
+    return;
+}
+
+
+int GameLevelManager::pageFromCommentKey(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::parseRestoreData(std::string p0)
+{
+    return;
+}
+
+
+void GameLevelManager::performNetworkTest()
+{
+    if (!m_networkTested->getValue())
     {
-        /* If the user is now blocked in our blacklist do this...*/
-        auto blockedUserKey = cocos2d::CCString::createWithFormat("blockUser_%i", accountID)->getCString();
-        if (m_pUnkDict->objectForKey(blockedUserKey) == NULL)
-        {
-            /* Set the user as being blocked... */
-            m_pUnkDict->setObject(cocos2d::CCNode::create(), blockedUserKey);
-            std::string postData = getBasePostString();
-            auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-            postData += cocos2d::CCString::createWithFormat("&targetAccountID=%i&secret=%s", accountID, secret)->getCString();
-            ProcessHttpRequest("https://www.boomlings.com/database/blockGJUser20.php", postStr, blockedUserKey, kGJHttpTypeBlockUser);
-        }
+        bool v = m_networkTested->getValue(); v = true;
+        std::string postData = "temp";
+        cocos2d::extension::CCHttpRequest *request = new cocos2d::extension::CCHttpRequest();
+        request->setUrl("https://www.google.com");
+        /* Unknown Field Call where variable 0x74 is set to 1 */
+        request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpPost);
+        request->setResponseCallback(this, static_cast<cocos2d::extension::SEL_HttpResponse>(onProcessHttpRequestCompleted));
+        request->setUserData(nullptr);
+        retain();
+        request->setRequestData(postData.c_str(), postData.size());
+        request->setTag("tag");
+        cocos2d::extension::CCHttpClient::getInstance()->send(request);
+        request->release();
     }
-}
-
-/* CCHttpClient Info...
-_timeoutForRead 0x38
-_timeoutForConnect 0x34  NOTE: Robtop has this variable modified to "10" not "30"...
-std::vector<std::string> _headers 0x5c
-
-*/
-/* CCHttpRequest Info...
-_requestType 0x34 (Looks to have been set to 5 Not Sure what for...)
-_url 0x38
-_tag 0x48
-_pSelector 0x50
-_requestData 0x3c
-_pUserData 0x54
-_requestTypeGJ 0x68
-*/
+};
 
 void GameLevelManager::ProcessHttpRequest(std::string endpoint, std::string params, std::string tag, GJHttpType httpType)
 {
@@ -426,154 +1567,145 @@ void GameLevelManager::ProcessHttpRequest(std::string endpoint, std::string para
     cocos2d::extension::CCHttpRequest *request = new cocos2d::extension::CCHttpRequest();
     request->setUrl(endpoint.c_str());
     request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpPost);
-    request->setResponseCallback(this, onProcessHttpRequestCompleted);
+    request->setResponseCallback(this, static_cast<cocos2d::extension::SEL_HttpResponse>(onProcessHttpRequestCompleted));
     request->setUserData(NULL);
     if (this != NULL)
-    {
         retain();
-    }
     request->setRequestData(params.c_str(), params.size());
     request->setTag(tag.c_str());
-    request->_requestTypeGJ = (int)httpType;
+    request->set_requestTypeGJ((int)httpType);
     /* Send-Off */
     cocos2d::extension::CCHttpClient::getInstance()->send(request);
     request->release();
 }
 
-void GameLevelManager::performNetworkTest()
+
+void GameLevelManager::processOnDownloadLevelCompleted(std::string p0, std::string p1, bool p2)
 {
-    if (!b_NetworkTested)
-    {
-        b_NetworkTested = true;
-        std::string postData = "temp";
-        cocos2d::extension::CCHttpRequest *request = new cocos2d::extension::CCHttpRequest();
-        request->setUrl("https://www.google.com");
-        /* Unknown Field Call where variable 0x74 is set to 1 */
-        request->setRequestType(cocos2d::extension::CCHttpRequest::kHttpPost);
-        request->setResponseCallback(this, onProcessHttpRequestCompleted);
-        request->setUserData(NULL);
-        retain();
-        request->setRequestData(postData.c_str(), postData.size());
-        request->setTag("tag");
-        cocos2d::extension::CCHttpClient::getInstance()->send(request);
-        request->release();
-    }
-};
-
-void GameLevelManager::onProcessHttpRequestCompleted(cocos2d::extension::CCHttpClient *client, cocos2d::extension::CCHttpResponse *response)
-{
-    GameToolbox::getResponse(response);
-    return handleIt(true, response->getResponseData()->data(), response->getHttpRequest()->getTag(), (GJHttpType)response->getHttpRequest()->get_requestTypeGJ());
-}
-
-// void GameLevelManager::handleIt(bool success, std::string _response, std::string _tag, GJHttpType httpType){
-
-// };
-
-void GameLevelManager::resetStoredUserInfo(int key)
-{
-    m_pUserInfoDict->removeObjectForKey(key);
-}
-
-/* {"User-Agent":""}  <- No Headers for useragent are passed... */
-
-void GameLevelManager::acceptFriendRequest(int targetAccountID, int requestID)
-{
-    if (0 < targetAccountID && 0 < requestID)
-    {
-        const char *key = cocos2d::CCString::createWithFormat("accFriendReq_%i_%i", targetAccountID, requestID)->getCString();
-        cocos2d::CCNode *node = cocos2d::CCNode::create();
-        m_pUnkDict->setObject(node, key);
-        std::string Poststr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        Poststr += cocos2d::CCString::createWithFormat("&targetAccountID=%i&requestID=%i&secret=%s", targetAccountID, requestID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/acceptGJFriendRequest20.php", Poststr, key, kGJHttpTypeAcceptFriendRequest);
-    }
-}
-
-char *GameLevelManager::getDeleteCommentKey(int levelID, int commentID, int Ctype)
-{
-    return cocos2d::CCString::createWithFormat("delcomment_%i_%i_%i", levelID, commentID, Ctype)->getCString();
-}
-
-void GameLevelManager::deleteComment(int commentID, CommentType Ctype, int ID)
-{
-    const char *key = getDeleteCommentKey(levelID, commentID, Ctype);
-    CCObject *obj = m_pUnkDict->objectForKey(key);
-
-    if (obj == NULL)
-    {
-        auto n = cocos2d::CCNode::create();
-        std::string postStr = getBasePostString();
-        m_pUnkDict->setObject(c, key);
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&commentID=%i&secret=%s", commentID, secret)->getCString();
-        /* TODO: (Calloc) Rewrite Enums and*/
-        if (!Ctype)
-        {
-            postStr += "&levelID=";
-        }
-        else
-        {
-            postStr += "&cType=";
-            postStr += cocos2d::CCString::createWithFormat("%i", Ctype)->getCString();
-            postStr += "&targetAccountID=";
-        }
-        postStr += cocos2d::CCString::createWithFormat("%i", ID)->getCString();
-
-        if (!Ctype)
-        {
-            ProcessHttpRequest("https://www.boomlings.com/database/deleteGJComment20.php", postStr, key, kGJHttpTypeDeleteComment);
-        }
-        else
-        {
-            ProcessHttpRequest("https://www.boomlings.com/database/deleteGJAccComment20.php", postStr, key, kGJHttpTypeDeleteComment);
-        }
-    }
-}
-
-void GameLevelManager::deleteAccountComment(int ID, int commentID)
-
-{
-    // void GameLevelManager::deleteComment(int commentID, CommentType Ctype, int ID)
-    deleteComment(commentID, 1, ID);
     return;
 }
 
-void GameLevelManager::deleteServerLevel(int levelID)
+
+void GameLevelManager::purgeUnusedLevels()
 {
-    const char *key = getLevelKey(levelID);
-    cocos2d::CCObject *obj = m_pUnkDict->objectForKey(key);
-    if (obj == NULL)
+    return;
+}
+
+
+void GameLevelManager::rateDemon(int p0, int p1, bool p2)
+{
+    return;
+}
+
+
+void GameLevelManager::rateStars(int p0, int p1)
+{
+    return;
+}
+
+
+void GameLevelManager::readFriendRequest(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::removeDLFromActive(char const* tag)
+{
+    m_downloadObjects->removeObjectForKey(tag);
+}
+
+
+
+/* Unknown Return: GameLevelManager::removeDelimiterChars(std::string p0, bool p1){}; */
+
+void GameLevelManager::removeFriend(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::removeLevelDownloadedKeysFromDict(cocos2d::CCDictionary* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::removeUserFromList(int p0, UserListType p1)
+{
+    return;
+}
+
+
+void GameLevelManager::reportLevel(int levelID)
+{
+    if (!hasReportedLevel(levelID))
     {
-        auto n = cocos2d::CCNode::create();
-        std::string postStr = getBasePostString();
-        m_pUnkDict->setObject(c, key);
-        secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfv", "2898", 'g', 'c', "9")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&levelID=%i&secret=%s", levelID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/deleteGJLevelUser20.php", postStr, key, kGJHttpTypeDeleteServerLevel);
+        markLevelAsReported(levelID);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/reportGJLevel.php", 
+            cocos2d::CCString::createWithFormat("levelID=%i&secret=%s", levelID, Wmfd2893gb7)->getCString(), 
+            cocos2d::CCString::createWithFormat("%i", levelID)->getCString(), 
+            kGJHttpTypeReportLevel
+        );
     }
 }
 
-void GameLevelManager::downloadUserMessage(int messageID, bool isSender)
+
+void GameLevelManager::requestUserAccess()
 {
-    const char *key = getMessageKey(isSender, messageID);
-    if (!isDLActive(key))
-    {
-        addDLToActive(key);
-        std::string postStr = getBasePostString();
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&messageID=%i&secret=%s", messageID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/downloadGJMessage20.php", postStr, key, kGJHttpTypeDownloadUserMessage);
-    }
+    return;
 }
 
-void GameLevelManager::followUser(int ID)
+
+void GameLevelManager::resetAccountComments(int p0)
 {
-    return m_pFollowedCreators->setObject(cocos2d::CCString::create("1"), cocos2d::CCString::createWithFormat("%i", ID)->getCString());
+    return;
 }
 
-static cocos2d::CCDictionary *GameLevelManager::responseToDict(std::string response, bool snake_case)
+
+void GameLevelManager::resetAllTimers()
+{
+    return;
+}
+
+
+void GameLevelManager::resetCommentTimersForLevelID(int p0, CommentKeyType p1)
+{
+    return;
+}
+
+
+void GameLevelManager::resetDailyLevelState(GJTimedLevelType p0)
+{
+    return;
+}
+
+
+void GameLevelManager::resetGauntlets()
+{
+    return;
+}
+
+void GameLevelManager::resetStoredUserInfo(int key)
+{
+    m_storedUserInfo->removeObjectForKey(key);
+}
+
+void GameLevelManager::resetStoredUserList(UserListType p0)
+{
+    return;
+}
+
+
+void GameLevelManager::resetTimerForKey(char const* p0)
+{
+    return;
+}
+
+
+
+cocos2d::CCDictionary *GameLevelManager::responseToDict(std::string response, bool snake_case)
 {
     cocos2d::CCDictionary *dict = cocos2d::CCDictionary::create();
     cocos2d::CCArray *arr = Robtop::splitToCCArray(response, (snake_case ? "~" : ":"));
@@ -587,8 +1719,8 @@ static cocos2d::CCDictionary *GameLevelManager::responseToDict(std::string respo
         {
             break;
         }
-        key = arr->objectAtIndex(pos);
-        value = arr->objectAtIndex(pos + 1);
+        key = reinterpret_cast<cocos2d::CCString*>(arr->objectAtIndex(pos));
+        value = reinterpret_cast<cocos2d::CCString*>(arr->objectAtIndex(pos + 1));
         if (key != NULL && value != NULL)
         {
             dict->setObject(value, key->getCString());
@@ -598,106 +1730,332 @@ static cocos2d::CCDictionary *GameLevelManager::responseToDict(std::string respo
     return dict;
 }
 
-int GameLevelManager::getDailyTimer(GJTimedLevelType timedleveltype)
-{
-    if (timedleveltype == kGJTimedLevelTypeWeekly)
-    {
-        return m_weeklyTimeLeft;
-    }
-    else if (timedleveltype == kGJTimedLevelTypeEvent)
-    {
-        return m_eventTimeLeft;
-    }
-    else
-    {
-        return m_dailyTimeLeft;
-    }
-};
 
-int GameLevelManager::getDailyID(GJTimedLevelType timedleveltype)
+void GameLevelManager::restoreItems()
 {
-    if (timedleveltype == kGJTimedLevelTypeWeekly)
-    {
-        return m_weeklyID;
-    }
-    else if (timedleveltype == kGJTimedLevelTypeEvent)
-    {
-        return m_eventID;
-    }
-    else
-    {
-        return m_dailyID;
-    }
-};
-
-std::string gen_random(int size);
-
-void GameLevelManager::downloadLevel(int levelID, bool _isGaunlet)
-{
-    const char *key = getLevelDownloadKey(levelID, _isGaunlet);
-    if (!isDLActive(key))
-    {
-        addDLToActive(key);
-        std::string postStr = getBasePostString();
-        bool inc = hasDownloadedLevel(levelID);
-        const char *secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7");
-        postStr += cocos2d::CCString::createWithFormat("&levelID=%i&inc=%i&secret=%s", levelID, inc, secret)->getCString();
-        /* TODO: Finish...*/
-    };
+    return;
 }
 
-cocos2d::CCObject *GameLevelManager::friendRequestFromAccountID(int accountID)
+
+void GameLevelManager::saveFetchedLevelLists(cocos2d::CCArray* p0)
 {
-    return m_pFriendRequestsDict->objectForKey(accountID);
+    return;
 }
 
-// TODO:
-// void  GameLevelManager::storeUserName(int param_1,int param_2, std::string _name){
 
-//   if (0 < param_1) {
-//     pCVar1 = this->m_pknownUsers;
-//     std::basic_string::basic_string((basic_string *)__name,*(char **)_name);
-//     __ccstr = cocos2d::CCString::create((basic_string)__name);
-//     this_00 = cocos2d::CCString::createWithFormat("%i",param_1);
-//     __s = cocos2d::CCString::getCString(this_00);
-//     cocos2d::CCDictionary::setObject(pCVar1,(CCObject *)__ccstr,(basic_string)auStack_30);
-
-//     if (0 < param_2) {
-//         this->m_userIDtoAccountIDDict->setObject(pCVar1,cocos2d::CCString::createWithFormat("%i",param_2) , param_1);
-//         this->m_accountIDtoUserIDDict->setObject(pCVar1,cocos2d::CCString::createWithFormat("%i",param_1), param_2);
-//     }
-//   }
-//   if (local_2c != __stack_chk_guard) {
-//                     /* WARNING: Subroutine does not return */
-//     __stack_chk_fail();
-//   }
-//   return;
-// }
-
-// void GameLevelManager::getOnlineLevels(GJSearchObject* query){
-//     const char* key = query->getKey();
-//     if (!isDLActive(key)){
-//         addDLToActive(key);
-//         /* I will Optimize this bit later... */
-//         bool m_onlyCompleted = query->m_searchIsOverlay ? query->m_onlyCompleted : false;
-//         if ((query->m_searchIsOverlay) || (m_onlyCompleted)){
-//             cocos2d::CCArray* completed_levels = sharedState()->getCompletedLevels(GameManager::sharedState()->getGameVariable("0073"));
-//             for (unsigned int i = 0; i < completed_levels->count(); i++){
-
-//             }
-//         }
-//     }
-// }
-
-void GameLevelManager::getLevelLists(GJSearchObject *searchObject)
+void GameLevelManager::saveFetchedLevels(cocos2d::CCArray* p0)
 {
-    const char *dl_key = searchObject->getKey();
-    if (isDLActive(dl_key))
-    {
-        addDLToActive(dl_key);
-        std::string postStr = getBasePostString();
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s", 'W', "mfd", "2893", 'g', 'b', "7")->getCString();
-        postStr += cocos2d::CCString::createWithFormat("&str=%s&type=%i&page=%i&secret=%s", searchObject->m_searchQuery, searchObject->m_seachType, searchObject->m_page, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getGJLevelLists.php", postStr, dl_key, 0x3c);
-    }
+    return;
 }
+
+
+void GameLevelManager::saveFetchedMapPacks(cocos2d::CCArray* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::saveGauntlet(GJMapPack* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::saveLevel(GJGameLevel* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::saveLevelList(GJLevelList* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::saveLocalScore(int p0, int p1, int p2)
+{
+    return;
+}
+
+
+void GameLevelManager::saveMapPack(GJMapPack* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::setActiveSmartTemplate(GJSmartTemplate* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::setBoolForKey(bool p0, char const* p1)
+{
+    return;
+}
+
+
+void GameLevelManager::setDiffVal(int p0, bool p1)
+{
+    return;
+}
+
+
+void GameLevelManager::setFolderName(int p0, std::string p1, bool p2)
+{
+    return;
+}
+
+
+void GameLevelManager::setIntForKey(int p0, char const* p1)
+{
+    return;
+}
+
+
+void GameLevelManager::setLenVal(int p0, bool p1)
+{
+    return;
+}
+
+
+void GameLevelManager::setLevelFeatured(int p0, int p1, bool p2)
+{
+    return;
+}
+
+
+void GameLevelManager::setLevelStars(int p0, int p1, bool p2)
+{
+    return;
+}
+
+
+GameLevelManager* GameLevelManager::sharedState()
+{
+    return;
+}
+
+
+int GameLevelManager::specialFromLikeKey(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::storeCommentsResult(cocos2d::CCArray* p0, std::string p1, char const* p2)
+{
+    return;
+}
+
+
+void GameLevelManager::storeDailyLevelState(int p0, int p1, GJTimedLevelType p2)
+{
+    return;
+}
+
+
+void GameLevelManager::storeFriendRequest(GJFriendRequest* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::storeSearchResult(cocos2d::CCArray* levels, std::string pageInfo, char const* searchKey)
+{
+    return;
+}
+
+
+void GameLevelManager::storeUserInfo(GJUserScore* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::storeUserMessage(GJUserMessage* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::storeUserMessageReply(int p0, GJUserMessage* p1)
+{
+    return;
+}
+
+
+void GameLevelManager::storeUserName(int userID, int accountID, std::string userName)
+{
+    return;
+}
+
+
+void GameLevelManager::storeUserNames(std::string usernameString)
+{
+    return;
+}
+
+
+void GameLevelManager::submitUserInfo()
+{
+    return;
+}
+
+
+void GameLevelManager::suggestLevelStars(int p0, int p1, int p2)
+{
+    return;
+}
+
+
+std::string GameLevelManager::tryGetUsername(int p0)
+{
+    return;
+}
+
+
+CommentType GameLevelManager::typeFromCommentKey(char const* p0)
+{
+    return;
+}
+
+
+LikeItemType GameLevelManager::typeFromLikeKey(char const* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::unblockUser(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::unfollowUser(int p0)
+{
+    return;
+}
+
+
+void GameLevelManager::updateDescription(int p0, std::string p1)
+{
+    return;
+}
+
+
+void GameLevelManager::updateLevel(GJGameLevel* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::updateLevelOrders()
+{
+    return;
+}
+
+
+void GameLevelManager::updateLevelRewards(GJGameLevel* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::updateSavedLevelList(GJLevelList* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::updateUserScore()
+{
+    return;
+}
+
+
+void GameLevelManager::updateUsernames()
+{
+    return;
+}
+
+
+void GameLevelManager::uploadAccountComment(std::string p0)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadComment(std::string p0, CommentType p1, int p2, int p3)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadFriendRequest(int p0, std::string p1)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadLevel(GJGameLevel* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadLevelComment(int p0, std::string p1, int p2)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadLevelList(GJLevelList* p0)
+{
+    return;
+}
+
+
+void GameLevelManager::uploadUserMessage(int p0, std::string p1, std::string p2)
+{
+    return;
+}
+
+
+int GameLevelManager::userIDForAccountID(int p0)
+{
+    return;
+}
+
+
+GJUserScore* GameLevelManager::userInfoForAccountID(int p0)
+{
+    return;
+}
+
+
+std::string GameLevelManager::userNameForUserID(int p0)
+{
+    return;
+}
+
+
+
+/* Unknown Return: GameLevelManager::verifyContainerOnlyHasLevels(cocos2d::CCDictionary* p0){}; */
+
+void GameLevelManager::verifyLevelState(GJGameLevel* p0)
+{
+    return;
+}
+
+
+std::string GameLevelManager::writeSpecialFilters(GJSearchObject* p0)
+{
+    return;
+}
+
+
+
