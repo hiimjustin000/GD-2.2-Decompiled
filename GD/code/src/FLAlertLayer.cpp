@@ -69,6 +69,67 @@ FLAlertLayer* create(char const* title, const std::string& desc, char const* btn
 	return FLAlertLayer::create(nullptr, title, desc, btn, nullptr, 300.0);
 }
 
+/* Decompiled by Alphalaneous */
+void FLAleartLayer::show() {
+    CCDirector* director = CCDirector::sharedDirector();
+
+    unsigned int opacity;
+    int zOrder;
+
+    CCScaleTo* scaleTo = CCScaleTo::create(0.5, 1.0);
+    CCEaseElasticOut* easeElasticOut =   CCEaseElasticOut::create((CCActionInterval*)scaleTo, 0.6);
+    CCFadeTo* fadeTo;
+
+    CCScene* runningScene;
+    CCScene* nextScene;
+
+    if(m_noElasticity) {
+        runningScene = director->m_pRunningScene;
+        nextScene = (CCScene*) m_scene;
+        if(nextScene == nullptr) {
+            zOrder = runningScene->getHighestChildZ() + 1;
+            if(zOrder < 105){
+                zOrder = 105;
+            }
+            m_ZOrder = zOrder;
+            nextScene = runningScene;
+        }
+        if(m_ZOrder == 0) {
+            m_ZOrder = 105;
+        }
+        nextScene->addChild(this, m_ZOrder);
+        this->setKeypadEnabled(true);
+        return;
+    }
+
+    opacity = this->getOpacity();
+
+    m_mainLayer->setScale(0.1f);
+    m_mainLayer->runAction(easeElasticOut);
+
+    runningScene = director->m_pRunningScene;
+    nextScene = (CCScene*) m_scene;
+
+    if(nextScene == nullptr) {
+        zOrder = runningScene->getHighestChildZ() + 1;
+        if(zOrder < 105) {
+            zOrder = 105;
+        }
+        m_ZOrder = zOrder;
+        nextScene = runningScene;
+    }
+    if(m_ZOrder == 0) {
+        m_ZOrder = 105;
+    }
+    
+    nextScene->addChild(this, zOrder);
+
+    this->setOpacity(0);
+
+    fadeTo = CCFadeTo::create(0.14, opacity);
+    this->runAction(fadeTo);
+    this->setKeypadEnabled(true);
+}
 
 
 void FLAlertLayer::incrementForcePrio(){
