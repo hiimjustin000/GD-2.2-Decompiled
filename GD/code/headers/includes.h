@@ -67,6 +67,7 @@
 #include "CCCircleWave.h"
 #include "CCScrollLayerExt.h"
 #include "TableView.h"
+#include "GJFriendRequest.h"
 
 // Layer Related Classes
 
