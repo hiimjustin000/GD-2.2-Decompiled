@@ -90,8 +90,33 @@ void GameLevelManager::blockUser(int accountID)
 
 void GameLevelManager::cleanupDailyLevels()
 {
-    return;
+    auto array = this->m_dailyLevels->allKeys();
+    /* There's some unknown names so I'm going to use these letters for the time being... */
+    unsigned int a = 0, b = 0, c, d, e;
+    for (unsigned int i= 0; i < array->count(); i++) {
+        unsigned int count = array->count(); 
+        const char* key = reinterpret_cast<cocos2d::CCString *>(array->objectAtIndex(i))->getCString();
+        GJGameLevel* level= reinterpret_cast<GJGameLevel*>(m_dailyLevels->objectForKey(key));
+        auto dailyID = level->m_dailyID_Random - level->m_dailyID_Seed;
+        if (dailyID < 0x186a1) {
+            e = dailyID;
+            d = b;
+            c = a;
+        }
+        if (dailyID < c) {
+            level->m_levelNotDownloaded = true;
+            level->m_dontSave = true;
+            if (level->m_newNormalPercent_Random - level->m_newNormalPercent_Seed < 1) {
+                this->m_dailyLevels->removeObjectForKey(key);
+            }
+            e = a;
+            d = b;
+        }
+        a = e;
+        b = d;
+    }
 }
+
 
 
 cocos2d::CCArray * splittoCCArray(std::string str,char *delimiter)
@@ -169,36 +194,87 @@ cocos2d::CCArray* GameLevelManager::createAndGetLevelComments(std::string commen
 }
 
 
-cocos2d::CCArray* GameLevelManager::createAndGetLevelLists(std::string p0)
+cocos2d::CCArray* GameLevelManager::createAndGetLevelLists(std::string response)
 {
-    return;
+    auto lists = cocos2d::CCArray::create();
+    cocos2d::CCArray* array = splittoCCArray(response,"|");
+    for (unsigned int i = 0; i < array->count(); i++) {
+        GJLevelList* obj = GJLevelList::create(responseToDict(reinterpret_cast<cocos2d::CCString*>(array->objectAtIndex(i))->getCString(),false));
+        if (obj != nullptr) {
+            lists->addObject(obj);
+        }
+    }
+    return lists;
 }
 
 
-cocos2d::CCArray* GameLevelManager::createAndGetLevels(std::string p0)
+
+cocos2d::CCArray * GameLevelManager::createAndGetLevels(std::string response)
 {
-    return;
+    cocos2d::CCArray* array = cocos2d::CCArray::create();
+    cocos2d::CCArray* raw_levels = splittoCCArray(response, "|");
+    for (unsigned int i = 0; i < raw_levels->count(); i++) {
+        GJGameLevel* obj = GJGameLevel::create(responseToDict(reinterpret_cast<cocos2d::CCString *>(raw_levels->objectAtIndex(i))->getCString(), false), true);
+        if (obj != nullptr) {
+            array->addObject(obj);
+        }
+    }
+    return array;
 }
 
 
+/* TODO: Coming soon... */
 cocos2d::CCArray* GameLevelManager::createAndGetMapPacks(std::string p0)
 {
     return;
 }
 
 
-cocos2d::CCArray* GameLevelManager::createAndGetScores(std::string p0, GJScoreType p1)
-{
-    return;
-}
 
+cocos2d::CCArray * GameLevelManager::createAndGetScores(std::string response, GJScoreType scoreType)
+{
+    cocos2d::CCArray* scores = cocos2d::CCArray::create();
+    cocos2d::CCArray* raw_scores = splittoCCArray(response,"|");
+    for (unsigned int i = 0; i < raw_scores->count(); i++) {
+        GJUserScore* score = GJUserScore::create(
+            responseToDict(reinterpret_cast<cocos2d::CCString*>(raw_scores->objectAtIndex(i))->getCString(),false)
+        );
+        if (score != nullptr) {
+            score->m_scoreType = (int)scoreType;
+            scores->addObject(score);
+            storeUserName(score->m_userID,score->m_accountID, score->m_userName);
+        }
+    }
+    return scores;
+}
 
 GJGameLevel* GameLevelManager::createNewLevel()
 {
-    return;
+    bool limit;
+    cocos2d::CCObject* obj;
+    auto newLevel = GJGameLevel::create();
+    newLevel->m_levelType = (GJLevelType)2 /* TODO */;
+    newLevel->m_isEditable = true;
+    newLevel->m_creatorName = GameManager::sharedState()->m_playerUDID;
+    auto dict = LocalLevelManager::sharedState()->getAllLevelsInDict();
+    unsigned int unamedId = 0;
+
+    while (obj != nullptr && limit) {
+        const char* name = cocos2d::CCString::createWithFormat("Unnamed %i", unamedId)->getCString();
+        obj = dict->objectForKey(name);
+        /* Pretty weird that robtop would stop at 999 levels I wonder if he thought people wouldn't make more than that... - Calloc */
+        limit = unamedId < 999;
+        if (obj == nullptr || !limit) {
+            newLevel->m_tempName = name;
+        }
+        unamedId++;
+    }
+    LocalLevelManager::sharedState()->m_localLevels->insertObject(newLevel, 0);
+    return newLevel;
 }
 
-
+/* TODO: "createNewLevelList()" It's a little bit bigger than I expected at the moment but it will be done 
+ * unless someone else would like a shot at it... */
 GJLevelList* GameLevelManager::createNewLevelList()
 {
     return;
@@ -206,17 +282,21 @@ GJLevelList* GameLevelManager::createNewLevelList()
 
 
 
-/* Unknown Return: GameLevelManager::createPageInfo(int p0, int p1, int p2){}; */
+std::string GameLevelManager::createPageInfo(int Requested, int pageSum, int CurrentPage)
+{
+    return cocos2d::CCString::createWithFormat("%i%s%i%s%i", Requested, ":", pageSum, ":", CurrentPage)->getCString();
+}
+
 
 GJSmartTemplate* GameLevelManager::createSmartTemplate()
 {
     return;
 }
 
-
-void GameLevelManager::dataLoaded(DS_Dictionary* p0)
+/* TODO: This one is a Bigass Maze of 500+ lines */
+bool GameLevelManager::dataLoaded(DS_Dictionary* dsdict)
 {
-    return;
+
 }
 
 
@@ -249,12 +329,70 @@ void GameLevelManager::deleteComment(int commentID, CommentType Ctype, int ID)
 
 unsigned int GameLevelManager::deleteFriendRequests(int targetAccountID, cocos2d::CCArray *selectedFriendRequests, bool isSender)
 {
-    
+    GJFriendRequest* friendReq;
+    std::string postData;
+    /* TODO: Get rid of goto part if possible... */
+    if (selectedFriendRequests == nullptr) {
+      postData = "";
+      if (0 < targetAccountID)
+        goto DELETE_FRIEND_REQUESTS;
+
+    } else { 
+        if (selectedFriendRequests->count() == 1) {
+            friendReq = reinterpret_cast<GJFriendRequest *>(selectedFriendRequests->objectAtIndex(0));
+            targetAccountID = friendReq->m_fromAccountID;
+            if (0 < targetAccountID) {
+                selectedFriendRequests = nullptr;
+            }
+            DELETE_FRIEND_REQUESTS: 
+                auto key = cocos2d::CCString::createWithFormat("delFriendReq_%i_%i", targetAccountID, isSender)->getCString();
+                if (m_friendReqAndUserBlocks->objectForKey(key) == nullptr) {
+                    m_friendReqAndUserBlocks->setObject(cocos2d::CCNode::create(), key);
+                    postData = FORMAT_HTTP_REQUEST("&targetAccountID=%i&isSender=%i&secret=%s",targetAccountID, isSender, Wmfd2893gb7);
+                    
+                    /* "DDOS Prevention, Smart stuff Robtop" - Calloc */
+                    if (selectedFriendRequests != nullptr){
+                        postData += "&accounts=";
+                        for (unsigned int i = 0; i < selectedFriendRequests->count(); i++) {
+                            friendReq = reinterpret_cast<GJFriendRequest *>(selectedFriendRequests->objectAtIndex(i));
+                            if (selectedFriendRequests->count() != 0) {
+                                postData += ",";
+                            }
+                            postData += cocos2d::CCString::createWithFormat("%i", friendReq->m_fromAccountID)->getCString();             
+                        }
+                    }
+                    ProcessHttpRequest(
+                        "https://www.boomlings.com/database/deleteGJFriendRequests20.php", postData, key, 
+                        kGJHttpTypeDeleteFriendRequest);
+                }
+        }
+    }
 }
 
-void GameLevelManager::deleteLevel(GJGameLevel* p0)
+void GameLevelManager::deleteLevel(GJGameLevel *level)
 {
-    return;
+    /* is the level local or online? */
+    if (level->m_levelType == 2) {
+        LocalLevelManager::sharedState()->m_localLevels->removeObject(level, true);
+    }
+    else {
+        const char* key = getLevelKey(level->m_levelID_Random - level->m_levelID_Seed);
+        GJGameLevel *onlineLevel = reinterpret_cast<GJGameLevel *>(m_onlineLevels->objectForKey(key)); 
+        if (
+            (onlineLevel == nullptr) || (
+                (onlineLevel->getNormalPercent() < 1) &&
+                (onlineLevel->m_practicePercent < 1) && 
+                (onlineLevel->m_bestTime < 1) &&
+                (onlineLevel->m_bestPoints == 0) && 
+                (onlineLevel->m_levelFavorited == false)
+            )
+        ) {
+            m_onlineLevels->removeObjectForKey(getLevelKey(level->m_levelID_Random - level->m_levelID_Seed));
+        } else {
+            onlineLevel->m_levelString = "";
+            onlineLevel->m_levelNotDownloaded = true;
+        }
+    }
 }
 
 
@@ -265,10 +403,16 @@ void GameLevelManager::deleteLevelComment(int levelID,int commentID)
 
 
 
-void GameLevelManager::deleteLevelList(GJLevelList* p0)
+void GameLevelManager::deleteLevelList(GJLevelList* list)
 {
-    return;
+    if (list->m_listType == 2) {
+        LocalLevelManager::sharedState()->m_localLevelLists->removeObject(list,true);
+    }
+    else {
+        m_GLM21->removeObjectForKey(getLevelListKey(list->m_listID));
+    }
 }
+
 
 
 void __thiscall GameLevelManager::deleteSentFriendRequest(int sentID)
@@ -291,13 +435,19 @@ void GameLevelManager::deleteServerLevel(int levelID)
 }
 
 
-void GameLevelManager::deleteServerLevelList(int p0)
+void __thiscall GameLevelManager::deleteServerLevelList(int listID)
 {
-    return;
+    if (m_unkLevelLists.find(GameToolbox::intToString(listID)) == m_unkLevelLists.end()) {
+        m_unkLevelLists[GameToolbox::intToString(listID)] = listID;
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/deleteGJLevelList.php", 
+            FORMAT_HTTP_REQUEST("&listID=%i&secret=%s",listID, Wmfd2893gb7), 
+            GameToolbox::intToString(listID), kGJHTTPTypeDeleteServerLevelList
+        );
+    }
 }
 
-
-void GameLevelManager::deleteSmartTemplate(GJSmartTemplate* p0)
+void GameLevelManager::deleteSmartTemplate(GJSmartTemplate* template)
 {
     return;
 }
@@ -324,10 +474,10 @@ void GameLevelManager::downloadLevel(int levelID, bool _isGaunlet)
     {   
         int inc = hasDownloadedLevel(levelID);
         addDLToActive(key);
-        std::string postStr = FORMAT_HTTP_REQUEST("&levelID=%i&inc=%i&secret=%s", levelID, inc, Wmfd2893gb7);
+        std::string postData = FORMAT_HTTP_REQUEST("&levelID=%i&inc=%i&secret=%s", levelID, inc, Wmfd2893gb7);
         if (inc){
             auto rs = gen_random(10);
-            postStr += "&rs="; postStr += rs;
+            postData += "&rs="; postData += rs;
             auto AM = GJAccountManager::sharedState();
             auto GM = GameManager::sharedState();
             /* I would think this is it?... */
@@ -344,7 +494,7 @@ void GameLevelManager::downloadLevel(int levelID, bool _isGaunlet)
             rtsha1::calc(pre_chk, strlen(pre_chk), hash);
             rtsha1::toHexString(hash, chk);
             postData += "&chk=";
-            postData += cocos2d::ZipUtils::base64EncodeEnc(key, chk, "41274");
+            postData += cocos2d::ZipUtils::base64EncodeEnc(chk, "41274");
         }
         ProcessHttpRequest("https://www.boomlings.com/database/downloadGJLevel22.php", postData, key, kGJHttpTypeDownloadLevel);
     }
@@ -491,12 +641,15 @@ GJLevelList* GameLevelManager::getAllUsedSongIDs(int p0)
 
 std::string GameLevelManager::getBasePostString()
 {
+    /* TODO: Rename/modernize GameManager's class member names*/
     auto GM = GameManager::sharedState();
 
     std::string BasePostString;
     BasePostString += cocos2d::CCString::createWithFormat(
                           "gameVersion=%i&binaryVersion=%i&udid=%s&uuid=%i", 22, 0x28, GM->m_sPlayerUDID, GM->m_nChkRand - GM->m_nChkSeed)
                           ->getCString();
+    
+    /* TODO: Rename/modernize GJAccountManager's class member names*/
     auto AM = GJAccountManager::sharedState();
     /* This is what it is not sure why it's this way but it is... - Calloc  */
     BasePostString += cocos2d::CCString::createWithFormat(
@@ -507,9 +660,9 @@ std::string GameLevelManager::getBasePostString()
 }
 
 
-bool GameLevelManager::getBoolForKey(char const* p0)
+bool GameLevelManager::getBoolForKey(char const* key)
 {
-    return;
+    return m_searchFilters->valueForKey(key)->boolValue();
 }
 
 
@@ -527,6 +680,7 @@ std::string GameLevelManager::getCommentKey(int ID, int page, int mode, CommentK
 
 
 /* Unknown Return: GameLevelManager::getCompletedGauntletLevels(){}; */
+
 
 cocos2d::CCArray* GameLevelManager::getCompletedLevels(bool p0)
 {
@@ -572,20 +726,19 @@ char const* GameLevelManager::getDeleteMessageKey(int p0, bool p1)
 
 /* Unknown Return: GameLevelManager::getDemonLevelsString(){}; */
 
-char const* GameLevelManager::getDescKey(int p0)
-{
-    return;
+const char * GameLevelManager::getDescKey(int value)
+{ 
+    return cocos2d::CCString::createWithFormat("desc_%i", value)->getCString();
 }
-
 
 const char *GameLevelManager::getDiffKey(int Diff)
 {
     return cocos2d::CCString::createWithFormat("Diff%i", Diff)->getCString();
 }
 
-bool GameLevelManager::getDiffVal(int p0)
+bool __thiscall GameLevelManager::getDiffVal(int key)
 {
-    return;
+    return m_searchFilters->valueForKey(getDiffKey(key))->boolValue();
 }
 
 
@@ -1986,7 +2139,13 @@ void GameLevelManager::storeUserMessageReply(int p0, GJUserMessage* p1)
 
 void GameLevelManager::storeUserName(int userID, int accountID, std::string userName)
 {
-    return;
+    if (0 < userID) {
+        m_knownUsers->setObject(cocos2d::CCStringMake(userName), cocos2d::CCString::createWithFormat("%i",userID)->getCString());
+        if (0 < accountID) {
+            m_userIDtoAccountIDDict->setObject(cocos2d::CCString::createWithFormat("%i", accountID), userID);
+            m_accountIDtoUserIDDict->setObject(cocos2d::CCString::createWithFormat("%i", userID), accountID);
+        }
+    }
 }
 
 
