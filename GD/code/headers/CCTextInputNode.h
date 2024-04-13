@@ -71,6 +71,7 @@ class CCTextInputNode : public cocos2d::CCLayer, cocos2d::CCIMEDelegate, cocos2d
 	TextInputNodeDelegate* m_delegate;
 	int m_maxLabelLength;
 	cocos2d::CCLabelBMFont* m_placeholderLabel;
+	/* TODO: Rename to m_filterProfanity */
 	bool m_filterSwearWords;
 	bool m_usePasswordChar;
 	bool m_forceOffset;
