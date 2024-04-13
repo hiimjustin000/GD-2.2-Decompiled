@@ -95,6 +95,47 @@ enum GJTimedLevelType {
 
 enum CommentType {
 	kCommentTypeLevelType = 0,
-	kCommentTypeMessageType = 2,
-	
+	kCommentTypeAccountType = 1,
+	kCommentTypeMessageType = 2
+};
+
+
+// SEE: https://github.com/nekitdev/gd.py/blob/main/gd/enums.py#L160
+
+enum IconType {
+	kIconTypeCube = 0,
+    kIconTypeShip = 1,
+    kIconTypeBall = 2,
+    kIconTypeUfo = 3,
+    kIconTypeWave = 4,
+    kIconTypeRobot = 5,
+    kIconTypeSpider = 6,
+    kIconTypeSwing = 7,
+    kIconTypeJetpack = 8
+};
+
+
+enum DifficultyIconType {
+	kDifficultyDiffIconBtn2 = 1,
+	kDifficultyDiffIconBtn = 2
+};
+
+enum GJLength {
+	kGJLengthTiny = 0,
+	kGJLengthShort = 1,
+	kGJLengthMedium = 2,
+	kGJLengthLong = 3,
+	kGJLengthXL = 4,
+	kGJLengthPlat = 5
+};
+
+
+/* TODO */
+enum DemonDifficultyType {
+
+}
+
+/* TODO */
+enum GJScoreType{
+
 };
