@@ -20,7 +20,7 @@ std::string GJStoreItem::getCurrencyKey()
 
 bool GJStoreItem::init(int listingID, int itemID, int itemType, int cost, ShopType shopType)
 {
-    /* I will Optimize this later... */
+    /* I will Optimize this later... NOTE: Most of These should all be considered as inline functions */
     int i;
     if (cocos2d::CCNode::init()) {
         this->m_listingID = listingID;
