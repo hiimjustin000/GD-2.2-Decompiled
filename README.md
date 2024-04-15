@@ -22,6 +22,7 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 - I am Using Andorid Version 2.205 with ghidra and some help from [geode's bindings](https://github.com/geode-sdk/bindings) to help assist me with reverse engineering GD. I will be altering some of Wylie's original class member names in order to match with geode's class member names to help them mod GD.
 - I will mainly be reverse engineering class objects that are not well understood by the community or haven't been fully reverse engineered yet in order to educate anyone interested...
 - The Good news is that most of everyone has already found most of the puzzle pieces missing , I just have to put them all together and make sure they all fit.
+- Eventually making everything compile and then verifying it off with a checksum however we are not to the point where these checks can be reasonably made.
 
 ## How Can I Contribute?
 - Unlike WylieMaster, I'm not very skilled yet at finding and naming class members by myself and I have chosen to simply leave that puzzle up to the Geode and it's many contributors and volunteers so that nothing remains in conflict. So in trade, the more class-members you find and add to the [geode bindings](https://github.com/geode-sdk/bindings) the more class objects and functions I will be able to reverse engineer.
