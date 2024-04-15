@@ -35,10 +35,13 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 
 - This Project is intended to be used as reference material to assist with modding.
 - Educating people on how geometry dash is built under the hood. 
-- This repository is <b>not</b> a matching decompilation. Code is code and at the end of the day we don't really know how it was actually written by Robtop.
-- This code is NOT intended to be compiled. I don't condone pirating the game!! I sure hope you bought it with your own money first!
-- I am not decompiling the entire game, I am <b>Primarly hunting for Client-Side Vulnerabilities / Exploits & (CVEs)</b> there's no bounties. There's really no vulnerabilities left Server-side anymore when it comes to this stuff and I've considered documenting stuff such as comment bans, the firewall and other micellaneous stuff that happens on the server's end since I've been programming & interacting with the server for a pretty long time actually.
-- I am mainly decompiling for components outside of the main game's objects unless something catches my eyes. Examples of such objects being reversed Include `ShareCommentLayer` `GameLevelManager`  `CCTextInputNode` or anything of that nature that are having to do with sending/getting comments, anti-hacking, anti-swearing, in-game-anti-cheats, http requests and searching for levels. I sometimes do other objects requested by the community depending on my mood such as the `AchievementManager`.
+- This repository is <b>not</b> a matching decompilation however we strive to be as correct as possible. Code is code and at the end of the day we don't really know how it was actually written by Robtop.
+
+- This code is NOT intended to be compiled (Yet) and I Refuse to provide you game assets when we reach the point of compilation and verification of executable files. I don't condone pirating the game!! I sure hope you bought it with your own money first!
+ 
+- I am <b>Primarly hunting for Client-Side Vulnerabilities / Exploits & (CVEs)</b> there's no bounties. There's really no vulnerabilities left Server-side anymore when it comes to this stuff and I've considered documenting stuff such as comment bans, the firewall and other micellaneous stuff that happens on the server's end since I've been programming & interacting with the server for a pretty long time actually.
+
+- I am mainly decompiling for components that I can decompile within my own abilities or limits, if there is a `TODO` label on something I may/(may not) come back to it. This means I except either me or someone else to get out of their seat and try to reverse engineer that function. Some of these class Objects are extemely large such as the `GameObject` which are going to require Teamwork to decompile. Some Functions are puzzles and mazes of their own. Hence why I am saying this now.
 
 
 ## Buy GD
@@ -52,3 +55,4 @@ if for some reason you haven't already I recommend you go and buy GD
 ## want to know more about the game?
 
 if you want to know about the game and how various aspects work, you can find documentation [here](https://github.com/Wyliemaster/gddocs)
+NOTE: Documentation is mainly from 2.11 at the moment and may need to be updated since new stuff has been added like levellists and more...
