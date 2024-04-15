@@ -1,12 +1,8 @@
 #include "../headers/includes.h"
 
-// GJAccountManager::GJAccountManager() 
-// {
-// }
-
-// NOTE: Being Redone due to update in Code..
 
 
+/* TODO: Start uncommenting and updating & repairing broken functions */
 
 void GJAccountManager::addDLToActive(const char *tag, cocos2d::CCObject * obj){
     m_activeDownloads->setObject(obj, tag);
@@ -16,14 +12,15 @@ void GJAccountManager::addDLToActive(const char *tag){
     addDLToActive(tag, cocos2d::CCNode::create());
 }
 
-void GJAccountManager::dataLoaded(DS_Dictionary *dsdict){
+bool GJAccountManager::dataLoaded(DS_Dictionary *dsdict){
   m_username = dsdict->getStringForKey("GJA_001");
-  m_accountID = dsdict->getIntegerForKey(dsdict,"GJA_003");
-  m_password =  dsdict->getStringForKey(dsdict,"GJA_002");
-  m_GJP2 = dsdict->getStringForKey(dsdict,"GJA_005");
-  if (m_password.len() != 0 && m_GJP2.length() == 0) {
+  m_accountID = dsdict->getIntegerForKey("GJA_003");
+  m_password =  dsdict->getStringForKey("GJA_002");
+  m_GJP2 = dsdict->getStringForKey("GJA_005");
+  if (m_password.length() != 0 && m_GJP2.length() == 0) {
     m_GJP2 = getShaPassword(m_password);
   }
+  return true;
 }
 
 
@@ -35,16 +32,23 @@ void GJAccountManager::encodeDataTo(DS_Dictionary *dsdict){
 
 /* This ones a noop */
 void GJAccountManager::firstSetup(){
-  return;
+    return;
 }
 
 
 void GJAccountManager::getAccountBackupURL(){
     if (isDLActive("burl_account")) {
         addDLToActive("burl_account");
-        auto secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'W',"mfd","2893",'g','b',"7")->getCString();
-        std::string postData = cocos2d::CCString::createWithFormat("accountID=%i&type=1&secret=%s",m_accountID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getAccountURL.php",postData,"AccountBackupURL", 0x36);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/getAccountURL.php",
+            cocos2d::CCString::createWithFormat(
+                    "accountID=%i&type=1&secret=%s", 
+                    m_accountID, 
+                    cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'W',"mfd","2893",'g','b',"7")->getCString()
+            )->getCString(),
+            "AccountBackupURL", 
+            kGJHttpTypeGetAccountBackupURL
+        );
     } 
 }
 
@@ -52,20 +56,28 @@ void GJAccountManager::getAccountBackupURL(){
 void GJAccountManager::getAccountSyncURL(){
     if (!isDLActive("surl_account")) {
         addDLToActive("surl_account");
-        const char* secret = cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'W',"mfd","2893",'g','b',"7")->getCString();
-        std::string postData = cocos2d::CCString::createWithFormat("accountID=%i&type=2&secret=%s", m_accountID, secret)->getCString();
-        ProcessHttpRequest("https://www.boomlings.com/database/getAccountURL.php", postData ,"AccountSyncURL", 0x37);
+        ProcessHttpRequest(
+            "https://www.boomlings.com/database/getAccountURL.php", 
+            cocos2d::CCString::createWithFormat(
+                "accountID=%i&type=2&secret=%s", 
+                m_accountID, 
+                cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'W',"mfd","2893",'g','b',"7")->getCString()
+            )->getCString(),
+            "AccountSyncURL", 
+            kGJHttpTypeGetAccountSyncURL
+        );
     }
 }   
 
 
 std::string GJAccountManager::getShaPassword(std::string password){
-    std::string hash;
-    std::string final_hash;
+    unsigned char hash[41];
+    std::string finalhash;
+    /* This implementation should be fine for right now I have no complaints whatsoever... */
     password += cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'m',"I29","fmAn",'x','g',"Ts")->getCString();
-    rtsha1::calc(password.c_str(), password.len(), hash.c_str());
-    rtsha1::toHexString(hash.c_str(), final_hash.data());
-    return final_hash;
+    rtsha1::calc(password.c_str(), password.size(), hash);
+    rtsha1::toHexString(hash, finalhash.data());
+    return finalhash;
 }
 
 bool GJAccountManager::isDLActive(const char *tag){
@@ -74,70 +86,70 @@ bool GJAccountManager::isDLActive(const char *tag){
 
 
 cocos2d::CCObject *GJAccountManager::getDLObject(const char *tag){
-    return m_pDLObject->objectForKey(tag);
+    return m_activeDownloads->objectForKey(tag);
 }
 
 
 
+void GJAccountManager::removeDLFromActive(const char *tag)
+{
+    m_activeDownloads->removeObjectForKey(tag);
+}
 
+void GJAccountManager::setPlayerName(std::string username)
+{
+    m_username = username;
+}
 
+void GJAccountManager::setPlayerPassword(std::string password)
+{
+    m_password = password;
+}
 
-// void GJAccountManager::removeDLFromActive(const char *tag)
-// {
-//     m_pDLObject->removeObjectForKey(tag);
-// }
+void GJAccountManager::setPlayerAccountID(int accountID)
+{
+    m_accountID = accountID;
+    m_accountIDRand = rand();
+    m_accountIDSeed = m_accountIDRand + m_accountID;
+}
 
-// void GJAccountManager::setPlayerName(std::string _username)
-// {
-//     m_sPlayerUsername = _username;
-// }
+int GJAccountManager::getPlayerAccountID()
+{
+    return m_accountIDSeed - m_accountIDRand;
+}
 
-// void GJAccountManager::setPlayerPassword(std::string _password)
-// {
-//     m_sPlayerPassword = _password;
-// }
+std::string GJAccountManager::getPlayerName()
+{
+    return m_username;
+}
 
-// void GJAccountManager::setPlayerAccountID(int _accountID)
-// {
-//     m_nPlayerAccountID = _accountID;
-//     m_nPlayerAccountIDRand = rand();
-//     m_nPlayerAccountIDSeed = m_nPlayerAccountIDRand + m_nPlayerAccountID;
-// }
-
-// int GJAccountManager::getPlayerAccountID()
-// {
-//     return m_nPlayerAccountIDSeed - m_nPlayerAccountIDRand;
-// }
-
-// std::string GJAccountManager::getPlayerName()
-// {
-//     return m_sPlayerUsername;
-// }
-
-// std::string GJAccountManager::getPlayerPassword()
-// {
-//     return m_sPlayerPassword;
-// }
+std::string GJAccountManager::getPlayerPassword()
+{
+    return m_password;
+}
 
 // std::string GJAccountManager::getGJP()
 // {
 //     return cocos2d::ZipUtils::base64EncodeEnc(m_sPlayerPassword, Globals::XORAccountPassword);
 // }
 
-// void GJAccountManager::encodeDataTo(DS_Dictionary *_dict)
-// {
-//     _dict->setStringForKey("GJA_002", m_sPlayerPassword);
-//     _dict->setStringForKey("GJA_001", m_sPlayerUsername);
-//     /* _dict->setIntegerForKey("GJA_003", m_nPlayerAccountID); if we were still in 2.1... */
-//     _dict->setStringForKey("GJA_005", m_sGJP2);
-// }
+void GJAccountManager::encodeDataTo(DS_Dictionary *_dict)
+{
+    _dict->setStringForKey("GJA_002", m_password);
+    _dict->setStringForKey("GJA_001", m_username);
+    /* _dict->setIntegerForKey("GJA_003", m_nPlayerAccountID); if we were still in 2.1... */
+    _dict->setStringForKey("GJA_005", m_GJP2);
+}
 
-// void GJAccountManager::dataLoaded(DS_Dictionary *_dict)
-// {
-//     m_sPlayerPassword = _dict->getStringForKey("GJA_002");
-//     m_sPlayerUsername = _dict->getStringForKey("GJA_001");
-//     m_nPlayerAccountID = _dict->getIntegerForKey("GJA_003");
-// }
+/* TODO: Fix GManager::dataLoaded() to void return type ? */
+
+bool GJAccountManager::dataLoaded(DS_Dictionary *_dict)
+{
+    m_password = _dict->getStringForKey("GJA_002");
+    m_username = _dict->getStringForKey("GJA_001");
+    m_GJP2 = _dict->getIntegerForKey("GJA_005");
+    return true;
+}
 
 // void GJAccountManager::firstSetup() {}
 
@@ -251,24 +263,22 @@ cocos2d::CCObject *GJAccountManager::getDLObject(const char *tag){
 //     }
 // }
 
-// void GJAccountManager::onGetAccountBackupURLCompleted(std::string _response, std::string tag)
-// {
-//     removeDLFromActive(tag.c_str());
-//     if (stoi(_response) != -1)
-//     {
-//         std::string endpoint = cocos2d::CCString::createWithFormat("%s/database/accounts/backupGJAccountNew.php", _response)->m_sString;
-//         bool backedUp = backupAccount(endpoint);
-//         if (!backedUp)
-//         {
-//         error_label:
-//             if (!m_pBackupAccountDelegate)
-//                 return;
-//             return m_pBackupAccountDelegate->backupAccountFailed(BackupAccountError::kBackupAccountErrorGeneric);
-//         }
-//     }
-//     else
-//         goto error_label;
-// }
+void GJAccountManager::onGetAccountBackupURLCompleted(std::string response, std::string tag)
+{
+    removeDLFromActive(tag.c_str());
+    if (response != "-1")
+    {
+        if (!backupAccount(cocos2d::CCString::createWithFormat("%s/database/accounts/backupGJAccountNew.php", response)->getCString()))
+        {
+            error_label:
+                if (!m_backupDelegate)
+                    return;
+                return m_backupDelegate->backupAccountFailed(BackupAccountError::kBackupAccountErrorGeneric);
+        }
+    }
+    else
+        goto error_label;
+}
 
 void GJAccountManager::handleIt(bool requestSentSuccessfully, std::string response, std::string tag, GJHttpType httpType){
     std::string serverResponse = requestSentSuccessfully ? response: "-1";
@@ -299,63 +309,63 @@ void GJAccountManager::handleIt(bool requestSentSuccessfully, std::string respon
     }
 }
 
-// bool GJAccountManager::syncAccount(std::string _endpoint)
-// {
-//     bool synced = false;
-//     const char* tag = "sync_account";
-//     if (!isDLActive(tag))
-//     {
-//         addDLToActive(tag);
-//         std::string params = cocos2d::CCString::createWithFormat("userName=%s&password=%s&secret=%s&gameVersion=%i&binaryVersion=%i&gdw=%i", 
-//             m_sPlayerUsername, 
-//             m_sPlayerPassword, 
-//             "Wmfv3899gc9", 
-//             21, 
-//             35, 
-//             0)->m_sString;
-
-//         ProcessHttpRequest(_endpoint, params, tag, GJHttpType::kGJHttpTypeSyncAccount);
-//         synced = true;
-//     }
-//     return synced;
-// }
-
-// GJAccountManager* GJAccountManager::sharedState()
-// {
-//     if (g_accountManager == nullptr)
-//     {
-//         g_accountManager = new GJAccountManager();
-//         g_accountManager->init();
-//     }
-//     return g_accountManager;
-// }
-
-// bool GJAccountManager::init()
-// {
-//    bool init = cocos2d::CCNode::init();
-//    if (init) {
-//        m_pDLObject = cocos2d::CCDictionary::create();
-//        m_pDLObject->retain();
-//    }
-//    return init;
-// }
 
 
-// void GJAccountManager::linkToAccount(std::string _username, std::string _password, int _accountID, int _playerID)
-// {
-//     GameManager* GM = GameManager::sharedState();
+bool  GJAccountManager::syncAccount(std::string syncURL)
+{  
+    if (!isDLActive("sync_account")) {
+        addDLToActive("sync_account");
+        ProcessHttpRequest(
+            syncURL,
+            GameLevelManager::sharedState()->getBasePostString() + cocos2d::CCString::createWithFormat("&secret=%s",cocos2d::CCString::createWithFormat("%c%s%s%c%c%s",'W',"mfv","3899",'g','c',"9")->getCString())->getCString() ,
+            "SyncAccount", 
+            kGJHttpTypeSyncAccount
+        );
+        return true;
+    }
+    return false;
+}
 
-//     setPlayerName(_username);
-//     setPlayerPassword(_password);
-//     setPlayerAccountID(_accountID);
 
-//     GM->setPlayerName(_username);
-//     GM->setPlayerID(_playerID);
+static GJAccountManager* GLOBAL_GJACCOUNTMANAGER;
 
-//     if (m_pAccountDelegate)
-//         m_pAccountDelegate->accountStatusChanged();
-//     GM->accountStatusChanged();
-// }
+GJAccountManager* GJAccountManager::sharedState()
+{
+    if (GLOBAL_GJACCOUNTMANAGER == nullptr)
+    {
+        GLOBAL_GJACCOUNTMANAGER = new GJAccountManager();
+        GLOBAL_GJACCOUNTMANAGER->init();
+    }
+    return GLOBAL_GJACCOUNTMANAGER;
+}
+
+bool GJAccountManager::init()
+{
+   if (cocos2d::CCNode::init()) {
+       m_activeDownloads = cocos2d::CCDictionary::create();
+       m_activeDownloads->retain();
+       return true;
+   }
+   return false;
+}
+
+
+void GJAccountManager::linkToAccount(std::string username, std::string password, int accountID, int playerID)
+{
+    GameManager* GM = GameManager::sharedState();
+
+    setPlayerName(username);
+    setPlayerPassword(password);
+    setPlayerAccountID(accountID);
+
+    // TODO: GameManager
+    // GM->setPlayerName(username);
+    // GM->setPlayerID(playerID);
+
+    if (m_accountDelegate)
+        m_accountDelegate->accountStatusChanged();
+    GM->accountStatusChanged();
+}
 
 // void GJAccountManager::onSyncAccountCompleted(std::string _response, std::string tag)
 // {
@@ -383,13 +393,7 @@ void GJAccountManager::handleIt(bool requestSentSuccessfully, std::string respon
 
 //         /*
 //         * too lazy, will do these later
-//         *
-//         * // parse mappacks
-//         *
-//         *
-//         *
-//         *
-//         * // parse levels
+//         * TODO: (Calloc) (Looks Like Wylie Left me quite a bit of a chore) Tunrs out these are all going to be different manager iteractions
 //         * 
 //         * 
 //         * 
