@@ -26,8 +26,10 @@ See this [repo](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-T
 ## How Can I Contribute?
 - Unlike WylieMaster, I'm not very skilled yet at finding and naming class members by myself and I have chosen to simply leave that puzzle up to the Geode and it's many contributors and volunteers so that nothing remains in conflict. So in trade, the more class-members you find and add to the [geode bindings](https://github.com/geode-sdk/bindings) the more class objects and functions I will be able to reverse engineer.
 - Downloading [Ghidra](https://github.com/NationalSecurityAgency/ghidra) or [IDA Pro](https://hex-rays.com/IDA-pro/) and Reverse engineering some of these class objects and members by youself. I am looking for other contributors besides just myself to volunteer in this effort.
-- Writing me a tool in Java to automatically write and fill class members from csv files to Structures and datatypes in ghidra would be a nice addition to this [repository](https://github.com/CallocGD/Geometry-Dash-Miscellaneous-Decomp-Tools) as it would speedup the proccess for new contributors to catch up with where I am at.
 - If you have or find any undocumented objects / class-members / C++ code and fully or even partially reverse engineered functions big and small that are not in this repository or it's code. I higly suggest and urgently encourage you fork this repository and send me a pull request with the objects and reverse engineered code that you want in here. I always try my very best to give credit to people that make these sorts of discoveries. You can also send me a dm about important findings on discord.
+- Joining my discord server linked above. We are constantly needing/looking for help with unsolved functions.
+- finding Robtop code-snippets (aka. freebies)
+
 
 ## IMPORTANT
 
