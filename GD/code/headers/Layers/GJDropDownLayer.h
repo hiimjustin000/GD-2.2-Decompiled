@@ -1,4 +1,5 @@
 #include "includes.h"
+#pragma once
 using cocos2d::SEL_CallFunc;
 using cocos2d::SEL_MenuHandler;
 
@@ -21,7 +22,7 @@ class GJDropDownLayer : public cocos2d::CCLayerColor {
 	void draw();
 	virtual void exitLayer(cocos2d::CCObject* obj);
 	virtual void hideLayer(bool instantHide);
-	void showLayer(bool instantShow);
+	void showLayer(bool instant);
 	void keyBackClicked();
 	void layerHidden();
 	void registerWithTouchDispatcher();
