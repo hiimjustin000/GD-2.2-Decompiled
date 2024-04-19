@@ -2,7 +2,15 @@
 using cocos2d::SEL_CallFunc;
 using cocos2d::SEL_MenuHandler;
 
-class GJDropDownLayer : public cocos2d::CCLayerColor, public GJDropDownLayerDelegate {
+
+class GJDropDownLayerDelegate {
+public:
+	virtual void dropDownLayerWillClose(GJDropDownLayer*);
+};
+
+class GJListLayer;
+
+class GJDropDownLayer : public cocos2d::CCLayerColor {
 	GJDropDownLayer();
 	~GJDropDownLayer();
 
@@ -29,13 +37,13 @@ class GJDropDownLayer : public cocos2d::CCLayerColor, public GJDropDownLayerDele
 	void ccTouchEnded() {}
 	void ccTouchMoved() {}
 
-	// these are from geode =)
-	cocos2d::CCPoint m_endPosition;
+
+	cocos2d::CCPoint m_endPosition; /* Fun Fact: Robtop calls this one inPos_ which is less readable than endPosition, Cry about it... ;-; */
 	cocos2d::CCPoint m_startPosition;
 	cocos2d::CCMenu* m_buttonMenu;
 	GJListLayer* m_listLayer;
 	bool m_controllerEnabled;
-	cocos2d::CCLayer* m_mainLayer;
+	cocos2d::CCLayer* m_internalLayer; /* Robtop Freebie from his Twitch Stream https://yewtu.be/watch?v=eBcUC9lYLdI at: 12:18 */
 	bool m_hidden;
 	GJDropDownLayerDelegate* m_delegate;
 };
