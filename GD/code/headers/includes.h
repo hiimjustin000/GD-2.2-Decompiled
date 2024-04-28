@@ -97,6 +97,8 @@
 #include "Layers/ShareLevelLayer.h"
 #include "Layers/ShaderLayer.h"
 #include "Layers/BoomScrollLayer.h"
+#include "Layers/LevelFeatureLayer.h"
+
 
 // Manager related classes
 
