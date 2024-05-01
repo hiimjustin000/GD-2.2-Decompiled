@@ -30,7 +30,7 @@ void FileSaveManager::firstLoad()
         if (category != "group") {
             cocos2d::CCArray* keys = keyDict->allKeys();
             for (unsigned int j = 0;  j < keys->count(); j++) {
-                cocos2d::CCObject* object = (m_fileSaveDict->objectForKey(reinterpret_cast<cocos2d::CCString*>(fsKeys->objectAtIndex(i))->getCString()));
+                cocos2d::CCObject* object = (m_fileSaveDict->objectForKey(reinterpret_cast<cocos2d::CCString*>(keys->objectAtIndex(i))->getCString()));
       
                 if ((object != nullptr) &&
                     (dynamic_cast<cocos2d::CCDictionary*>(object))) {
