@@ -1,7 +1,6 @@
 #include "includes.h"
+// Blame my Poor Ass .vscode settings -_-
 #include "cocos2dx/support/zip_support/ZipUtils.h"
-#include "GManager.h"
-
 
 
 /* 
@@ -43,8 +42,9 @@ bool GManager::load() {
 }
 
 bool GManager::loadDataFromFile(std::string fileName){
-    bool loadedData;
+    bool loadedData = true;
     std::string backup;
+    /* I Think Robtop should've made dsdict into a RAII variable TBH... - Calloc */
     DS_Dictionary *dsdict = new DS_Dictionary();
     if (!tryLoadData(dsdict, fileName)) {
         backup = fileName + "2.dat";
@@ -57,7 +57,7 @@ bool GManager::loadDataFromFile(std::string fileName){
             loadedData = tryLoadData(dsdict, fileName + ".dat.bak");
         }
         if (!loadedData) {
-            loadedData = firstLoad();
+            firstLoad();
         }
     }
     loadedData = dataLoaded(dsdict);
