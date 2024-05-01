@@ -12,7 +12,7 @@
 #include <cocos2d.h>
 #include "enums.h"
 
-// unorganised,  TODO: Organize this!
+// unorganised,  TODO: Organizing all of these A-Z would be better :)
 #include "custom.h"
 #include "GJRewardItem.h"
 #include "GJRewardObject.h"
@@ -67,7 +67,16 @@
 #include "CCCircleWave.h"
 #include "CCScrollLayerExt.h"
 #include "TableView.h"
+#include "GameToolbox.h"
+#include "AdToolBox.h"
 #include "GJFriendRequest.h"
+#include "GJLevelList.h"
+#include "DailyLevelNode.h"
+#include "DailyLevelPage.h"
+#include "UploadActionPopup.h"
+#include "PlatformToolbox.h"
+#include "GJValueTween.h"
+
 
 // Layer Related Classes
 
@@ -95,8 +104,15 @@
 #include "Layers/SetIDLayer.h"
 #include "Layers/UILayer.h"
 #include "Layers/ShareLevelLayer.h"
+#include "Layers/ShareCommentLayer.h"
 #include "Layers/ShaderLayer.h"
 #include "Layers/BoomScrollLayer.h"
+#include "Layers/LikeItemLayer.h"
+#include "Layers/RewardUnlockLayer.h"
+#include "Layers/GJListLayer.h"
+#include "Layers/EndLevelLayer.h"
+#include "Layers/MultiplayerLayer.h"
+/* This one might possibly one of Robtop's Secret tools */
 #include "Layers/LevelFeatureLayer.h"
 
 
@@ -110,6 +126,9 @@
 #include "Managers/GManager.h"
 #include "Managers/GJMultiplayerManager.h"
 #include "Managers/LocalLevelManager.h"
+#include "Managers/GameStatsManager.h"
+#include "Managers/FileSaveManager.h"
+
 
 // Cell related classes
 
@@ -130,6 +149,15 @@
 #include "Cells/SongCell.h"
 #include "Cells/StatsCell.h"
 #include "Cells/TableViewCell.h"
+
+
+// UI Related Classes
+
+#include "UI/UIButtonConfig.h"
+#include "UI/GJUINode.h"
+
+
+/* TODO: Move GJHttpType to enums.h */
 
 enum GJHttpType
 {
@@ -188,6 +216,12 @@ enum GJHttpType
     kGJHttpTypeGetTopArtists = 0x35,
     kGJHttpTypeGetAccountBackupURL = 0x36,
     kGJHttpTypeGetAccountSyncURL = 0x37,
-};;
+
+
+    kGJHTTPTypejoinLobby = 0x39,
+    kGJHTTPTypeExitMPLobby = 0x3a,
+    
+    kGJHTTPTypeDeleteServerLevelList = 0x3e,
+};
 
 #endif // __INCLUDES_H__
