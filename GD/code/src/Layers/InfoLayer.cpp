@@ -19,7 +19,5 @@ void InfoLayer::commentUploadFinished(int ID)
     GameManager::sharedState()->setGameVariable(GM,"0069",false);
     updateCommentModeButtons();
     loadPage(0,false);
-    return;
   }
-  return;
 }
