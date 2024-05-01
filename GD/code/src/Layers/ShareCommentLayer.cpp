@@ -1,5 +1,6 @@
 #include "includes.h"
 
+
 ShareCommentLayer* ShareCommentLayer::create(std::string title, int charLimit, CommentType type, int ID, std::string desc){
     ShareCommentLayer* scl = new ShareCommentLayer;
     if (scl != nullptr && scl->init(title, charLimit, type, ID, desc)){
