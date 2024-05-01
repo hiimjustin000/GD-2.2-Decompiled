@@ -10,6 +10,13 @@ class UploadActionDelegate{
 }; 
 
 
+/* ShareCommentLayer has multiple uses including 
+ * - Friend Requests
+ * - Level Comments
+ * - Profile Comments
+ * - Multiplayer Lobby 
+ * These all play a role in posting and sharing comments in geometry dash
+ */
 class ShareCommentLayer : public FLAlertLayer, public TextInputDelegate, public UploadActionDelegate, public UploadPopupDelegate { 
 
 public:
@@ -19,7 +26,7 @@ public:
 	bool init(std::string title, int charLimit, CommentType type, int ID, std::string desc);
 
     void onClear(cocos2d::CCObject *sender);
-    void onClose(cocos2d::CCObject* sender);
+   	void onClose(cocos2d::CCObject* sender);
 	void onPercent(cocos2d::CCObject* sender);
 	void onShare(cocos2d::CCObject* sender);
 	void updateCharCountLabel();
@@ -41,7 +48,7 @@ public:
     UploadActionPopup *m_uploadActionPopup;
 
     int m_charlimit;
-    int m_ID; /* Has something to do with the new verses mode feature coming soon... */
+    int m_ID;
     CommentType m_type; /* Type of comment we're going to be sharing */
     CCTextInputNode *m_textInput; /* Main Text Input */
     std::string m_descriptionText; /* Comment Text Input This is what get sent to our GameLevelManager */
