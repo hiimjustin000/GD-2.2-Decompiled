@@ -1,4 +1,5 @@
 #include "includes.h"
+#include "GameObject.h"
 
 
 
@@ -535,7 +536,7 @@ void __thiscall GameObject::duplicateAttributes(GameObject *object)
 /* Unknown Return: GameObject::duplicateColorMode(GameObject* p0){}; */
 
 
-void __thiscall GameObject::duplicateValues(GameObject *object)
+void GameObject::duplicateValues(GameObject *object)
 {
     if (getRotationX() == getRotationY()) {
         this->setRotation(object->getRotation());
@@ -671,29 +672,78 @@ int GameObject::getGroupID(int groupID){
 
 bool GameObject::getHasRotateAction()
 {
+    return false;
+}
+
+
+bool GameObject::getHasSyncedAnimation()
+{
   return false;
 }
 
 
-/* Unknown Return: GameObject::getHasSyncedAnimation(){}; */
+cocos2d::CCPoint GameObject::getLastPosition()
+{
+    return m_lastPosition;
+}
 
 
-/* Unknown Return: GameObject::getLastPosition(){}; */
+GJSpriteColor * GameObject::getMainColor()
+{
+    return m_mainColor;
+}
 
 
-/* Unknown Return: GameObject::getMainColor(){}; */
+
+int GameObject::getMainColorMode(){
+    auto color = getMainColor();
+    return (color != nullptr) ? color->getColorMode() : 0;
+};
 
 
-/* Unknown Return: GameObject::getMainColorMode(){}; */
+int GameObject::getObjectDirection(){
+    determineSlopeDirection();
+    int slope = static_cast<int>(this->m_slopeDirection - 2);
+    if (5 <  slope) {
+        return 4;
+    }
+    int ID = 1;
+    int i = 1 << (slope & 0xffU);
+    if ((i & 0x24) == 0) {
+        if ((i & 0x18) == 0) {
+            if ((i & 3) == 0) {
+              ID = 4;
+            }
+            else {
+              ID = 3;
+            }
+            return ID;
+        }
+    }
+    else {
+        ID = 2;
+    }
+    return ID;
+}
 
 
-/* Unknown Return: GameObject::getObjectDirection(){}; */
+int GameObject::getObjectLabel()
+{
+    return 0;
+}
 
 
-/* Unknown Return: GameObject::getObjectLabel(){}; */
+float GameObject::getObjectRadius()
+{
+    if ((m_scaleX != 1.0) || (m_scaleY != 1.0)) {
+        if (-1 < (m_scaleX < m_scaleY) << 0x1f){
+            m_scaleY = m_scaleX;
+        }
+        m_objectRadius *= m_scaleY;
+    }
+    return m_objectRadius;
+}
 
-
-/* Unknown Return: GameObject::getObjectRadius(){}; */
 
 cocos2d::CCRect const& GameObject::getObjectRect()
 {
@@ -701,32 +751,52 @@ cocos2d::CCRect const& GameObject::getObjectRect()
 }
 
 
-cocos2d::CCRect GameObject::getObjectRect(float p0, float p1)
+/* complexity: 5  Reason: Too Many Unknown Class members,  Lines: 48 */
+cocos2d::CCRect GameObject::getObjectRect(float width, float height)
 {
-    return;
 }
 
 
-
-/* Unknown Return: GameObject::getObjectRect2(float p0, float p1){}; */
-
-
-/* Unknown Return: GameObject::getObjectRectDirty(){}; */
-
-
-/* Unknown Return: GameObject::getObjectRectPointer(){}; */
-
-
-/* Unknown Return: GameObject::getObjectRotation(){}; */
+cocos2d::CCRect GameObject::getObjectRect2(float width,float height)
+{
+    if (m_objectRectDirty) {
+        m_objectRectDirty = false;
+        m_objectRect2 = (m_boxCalculated) ? getOuterObjectRect(): getObjectRect(width, height);
+    }
+    return m_objectRect2;
+}
 
 
+bool GameObject::getObjectRectDirty()
+{
+    return m_objectRectDirty;
+}
+
+cocos2d::CCRect* GameObject::getObjectRectPointer()
+{
+    if (m_objectRectDirty != false) {
+        m_objectRect2 = getObjectRect();
+    }
+    return &m_objectRect2;
+}
+
+double GameObject::getObjectRotation(){
+    return m_rotationDelta + m_rotationX;
+};
+
+/* complexity: 10 , Reason: Unknown Memebers and Unknown vtable Calls Otherwise Ask Robtop, Lines of Code: 86 */
 /* Unknown Return: GameObject::getObjectTextureRect(){}; */
 
 
-/* Unknown Return: GameObject::getObjectZLayer(){}; */
+int GameObject::getObjectZLayer()
+{
+    return (m_customZLayer) ? m_customZLayer : m_unkZLayer;
+}
 
-
-/* Unknown Return: GameObject::getObjectZOrder(){}; */
+int GameObject::getObjectZOrder()
+{
+    return (m_zOrder) ? m_zOrder :  m_unkZOrder;
+}
 
 
 /* Unknown Return: GameObject::getOrientedBox(){}; */
@@ -1393,3 +1463,4 @@ void GameObject::updateObjectEditorColor()
 
 
 /* Unknown Return: GameObject::usesSpecialAnimation(){}; */
+
