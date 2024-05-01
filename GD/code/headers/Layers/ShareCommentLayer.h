@@ -3,7 +3,7 @@
 
 #include "includes.h"
 
-
+/* a delegate */
 class UploadActionDelegate{
     virtual void uploadActionFinished(int, int) {}
 	virtual void uploadActionFailed(int, int) {}
