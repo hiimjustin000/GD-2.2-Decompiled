@@ -9,25 +9,6 @@ class UploadActionDelegate{
 	virtual void uploadActionFailed(int, int) {}
 }; 
 
-// 0x1f4	0x4	void *	void *	m_delegate	Created by retype action
-// 0x1f8	0x4	UploadActionPopup *	UploadActionPopup *	m_uploadActionPopup	
-// 0x1fc	0x4	int	int	m_charlimit	
-// 0x200	0x4	int	int	m_ID	
-// 0x204	0x4	CommentType	typedef CommentType dword	m_type	
-// 0x208	0x4	CCTextInputNode *	CCTextInputNode *	m_commentInput	
-// 0x20c	0x4	basic_string *	basic_string *	m_descriptionText	Created by retype action
-// 0x210	0x4	basic_string *	basic_string *	m_allowedChars	
-// 0x214	0x4	CCLabelBMFont *	CCLabelBMFont *	m_label	
-// 0x218	0x4	CCLabelBMFont *	CCLabelBMFont *	m_font	
-// 0x21c	0x4	UploadActionPopup *	UploadActionPopup *	m_uploadPopup	
-// 0x220	0x1	bool	bool	m_close	
-// 0x221	0x1	bool	bool	m_sharePercent	
-// 0x222	0x1	??	undefined		
-// 0x223	0x1	??	undefined		
-// 0x224	0x4	int	int	m_percent	
-// 0x228	0x4	undefined4	undefined4		
-
-
 
 class ShareCommentLayer : public FLAlertLayer, public TextInputDelegate, public UploadActionDelegate, public UploadPopupDelegate { 
 
