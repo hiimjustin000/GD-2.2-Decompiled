@@ -20,19 +20,25 @@ void OBB2D::calculateOBBWithCenter(cocos2d::CCPoint center, float width, float h
     orderCorners();
 }
 
+
 // I have no idea if this is correct. Decompiler output was useless so i had to rely on the assembly
 // and the assembly was an optimised mess
+
+// TODO: (Calloc) on ghidra this function computAxes() is using a while-loop to perform it's operations. 
+// It might be smart to redo this function all-together.
+
 void OBB2D::computeAxes()
 {
     m_obHorizontalDifference = m_obVertexBottomRight - m_obVertexBottomLeft;
     m_obVerticalDifference = m_obVertexTopLeft - m_obVertexBottomLeft;
 
-    cocos2d::CCPoint xAxis = 1.0 / (m_obHorizontalDifference.x * m_obHorizontalDifference.x) + (m_obHorizontalDifference.y * m_obHorizontalDifference.y);
-    cocos2d::CCPoint yAxis = 1.0 / (m_obVerticalDifference.x * m_obVerticalDifference.x) + (m_obVerticalDifference.y * m_obVerticalDifference.y);
+    float xAxis = 1.0 / (m_obHorizontalDifference.x * m_obHorizontalDifference.x) + (m_obHorizontalDifference.y * m_obHorizontalDifference.y);
+    float yAxis = 1.0 / (m_obVerticalDifference.x * m_obVerticalDifference.x) + (m_obVerticalDifference.y * m_obVerticalDifference.y);
 
     // We're using the BottomLeft vertex as the origin for the object
-    m_obAxes = { xAxis * m_obVertexBottomLeft, yAxis * m_obVertexBottomLeft };
+    // m_obAxes = (xAxis * m_obVertexBottomLeft, yAxis * m_obVertexBottomLeft );
 }
+
 
 bool OBB2D::init(cocos2d::CCPoint center, float width, float height, float rotationAngle)
 {
