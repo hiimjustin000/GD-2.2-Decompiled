@@ -21,8 +21,23 @@ int GameManager::getIntGameVariable(const char* Key){
     return m_valueKeeper->valueForKey(cocos2d::CCString::createWithFormat("%s%s","gv_",Key)->getCString())->intValue();
 }
 
+bool GameManager::isColorUnlocked(int color, UnlockType unlockType) {
+    if (color > 3) {
+        bool unlocked = m_valueKeeper->valueForKey(colorKey(color, unlockType))->boolValue();
+        return unlocked ? unlocked : GameStatsManager::sharedState()->isItemUnlocked(unlockType, color);
+    }
 
+    return true;
+}
 
+bool GameManager::isIconUnlocked(int icon, IconType iconType) {
+    if (iconType == kIconTypeCube && icon < 5) return true;
+    else if (icon < 2) return true;
+    else {
+        bool unlocked = m_valueKeeper->valueForKey(iconKey(icon, iconType))->boolValue();
+        return unlocked ? unlocked : GameStatsManager::sharedState()->isItemUnlocked(iconTypeToUnlockType(iconType), color);
+    }
+}
 
 /* -- RSV Values -- 
  * They are primarly used for geometry dash's rng patterns in game */
